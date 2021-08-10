@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rowLayout"
+    android:paddingHorizontal="10dp">
+
+        <TextView
+            android:id="@+id/drinkName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textColor="#CC000000"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/drinkDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/drinkName"
+            android:text="Lorem ipsum ..."
+            android:textColor="#CC000000"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/drinkChkBxTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/drinkChkBx"
+            android:layout_toRightOf="@id/drinkDel"
+            android:text="Favourite"
+            android:textSize="12dp" />
+
+        <CheckBox
+            android:id="@+id/drinkChkBx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            />
+
+        <ImageButton
+            android:id="@+id/drinkEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/drinkDel"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/edit_drink_icon"
+             />
+
+        <ImageButton
+            android:id="@+id/drinkDel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toLeftOf="@id/drinkChkBx"
+            android:background="@drawable/delete_drink_icon" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/drinkDesc"
+            android:layout_marginVertical="5dp"
+            android:background="#BFC1B3B3"/>
+
+</RelativeLayout>
