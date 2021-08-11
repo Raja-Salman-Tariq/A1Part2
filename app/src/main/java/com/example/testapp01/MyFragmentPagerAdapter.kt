@@ -4,6 +4,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
+
+// implementation of an abstract class; mandatory
+// connects ui w data
+// handles and manages overall layout structure and properties
 class MyFragmentPagerAdapter(fm: FragmentManager,
                              private val mFragList: MutableList<Fragment> = mutableListOf(),
                              private val mFragTitles:MutableList<String> = mutableListOf()) : FragmentPagerAdapter(fm){

@@ -15,9 +15,13 @@
 
         <TextView
             android:id="@+id/drinkDesc"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/drinkName"
+            android:layout_alignStart="@id/drinkName"
+            android:layout_toStartOf="@id/drinkEdit"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="Lorem ipsum ..."
             android:textColor="#CC000000"
             android:textSize="18dp" />

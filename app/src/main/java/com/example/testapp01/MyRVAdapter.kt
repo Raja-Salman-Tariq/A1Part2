@@ -1,5 +1,6 @@
 package com.example.testapp01
 
+import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -21,123 +22,25 @@ import androidx.annotation.NonNull
 
 import androidx.room.RoomDatabase
 import android.os.AsyncTask
+import com.example.testapp01.db.utils.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
+import android.content.DialogInterface
+import android.text.Editable
+import android.text.InputType
 
-@Entity
-data class Drink(@PrimaryKey(autoGenerate = true) val id:Int=-1, var name:String="", var desc:String="", var fav:Boolean=true)
-
-@Dao
-interface DrinkDao {
-    @Insert
-    fun addDrink(drink: Drink)
-
-    @Delete
-    fun deleteDrink(drink: Drink)
-
-    @Update
-    fun toggleFav(drink: Drink)
-
-    @Query("SELECT * FROM Drink WHERE fav=1 ORDER BY name ASC")
-    fun getFavs(): LiveData<List<Drink>>
-//    fun getFavs(): Flow<List<Drink>>
-
-    @Query("SELECT * FROM Drink ORDER BY name ASC")
-    fun getAll():LiveData<List<Drink>>
-
-    @Query("DELETE FROM Drink")
-    fun delAll()
-
-}
-
-@Database(entities = [Drink::class], version=1, exportSchema = false)
-abstract class DrinkDB:RoomDatabase(){
-    abstract fun getDrinkDao():DrinkDao
-
-    companion object {
-        private var INSTANCE: DrinkDB? = null
-
-        private val sRoomDatabaseCallback: Callback = object : Callback() {
-            override fun onOpen(db: SupportSQLiteDatabase) {
-                super.onOpen(db)
-                PopulateDbAsync(INSTANCE!!.getDrinkDao()).execute()
-            }
-        }
-
-        open fun getDatabase(context: Context?): DrinkDB? {
-            if (this.INSTANCE == null) {
-                synchronized(DrinkDB::class.java) {
-                    if (INSTANCE == null) {
-                        INSTANCE = Room.databaseBuilder(
-                            context!!.applicationContext,
-                            DrinkDB::class.java, "drink_db"
-                        ).fallbackToDestructiveMigration()
-                            .addCallback(sRoomDatabaseCallback)
-                            .build()
-                    }
-                }
-            }
-            return INSTANCE
-        }
-    }
+import android.widget.EditText
+import java.security.AccessController.getContext
 
 
+class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
 
-
-    private class PopulateDbAsync(val drinkDao: DrinkDao):AsyncTask<Void, Void, Void>(){
-
-        override fun doInBackground(vararg p0: Void?): Void? {
-            drinkDao.delAll()
-            drinkDao.addDrink(Drink(0,"One", "Drinke de la genesis", false))
-            return null
-        }
-
-    }
-}
-
-class DrinkRepo(
-    application: Application?,
-    val drinkDao: DrinkDao? = DrinkDB.getDatabase(application)?.getDrinkDao(),
-    val allDrinks: LiveData<List<Drink>>? =drinkDao?.getAll(),
-    val favDrinks: LiveData<List<Drink>>? =drinkDao?.getFavs()
-){
-    fun getAll(): LiveData<List<Drink>>? {
-        return allDrinks
-    }
-
-    fun getFavs(): LiveData<List<Drink>>? {
-        return favDrinks
-    }
-
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun upd(drink: Drink){
-        drinkDao?.toggleFav(drink)
-    }
-
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun insert(drink: Drink) {
-        drinkDao?.addDrink(drink)
-    }
-}
-
-class DrinkViewModel(application: Application?) : AndroidViewModel(application!!) {
-    private val mRepository: DrinkRepo = DrinkRepo(application)
-    val mAllDrinks: LiveData<List<Drink>>? =mRepository.getAll()
-    val favDrinks: LiveData<List<Drink>>? = mRepository.getFavs()
-//    val allWords: LiveData<List<Drink>>? =mAllDrinks
-
-    suspend fun upd(drink: Drink){
-        mRepository.upd(drink)
-    }
-
-    suspend fun insert(drink: Drink) {
-        mRepository.insert(drink)
-    }
-}
-
-class MyRVAdapter(val ctxt : Fragment, var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
+    /*###############################################
+    * -----         M A N D A T O R Y          -----*
+    * =============================================*/
+    //-----------------------------------------------
+    //-----------------------------------------------
     class MyViewHolder(val view: View, // default constructor, viewholder elements initialized
                               val layout:RelativeLayout=view.findViewById(R.id.rowLayout),
                               val name:TextView=view.findViewById(R.id.drinkName),
@@ -145,96 +48,149 @@ class MyRVAdapter(val ctxt : Fragment, var data:MutableList<Drink>):RecyclerView
                               val del:ImageButton=view.findViewById(R.id.drinkDel),
                               val edit:ImageButton=view.findViewById(R.id.drinkEdit),
                               val chkBx:CheckBox=view.findViewById(R.id.drinkChkBx)
-                            ):RecyclerView.ViewHolder(view)  // inheritance/extension
-
-    fun setDrinksData(drinkData: List<Drink> ){
-        data= drinkData as MutableList<Drink>
-        notifyDataSetChanged()
-    }
-
+                            ):RecyclerView.ViewHolder(view)
+    //-----------------------------------------------
     // Create a new view, which defines the UI of the list item
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):MyViewHolder{
         return MyViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_view, parent, false))
     }
-
-    // the actual interations with the view described here;
-    //      ie setting and changing of the view
-    //      and listeners
+    //-----------------------------------------------
+    // actual interactions with view; ie setting and changing of the view / listeners
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val (_, name, descr, fav)=data[position]
-        holder.name.text=name
-        holder.desc.text=descr
-        if (fav)
-            holder.chkBx.isChecked=true
+        val (id, name, descr, fav)=data[position]
+        holder.name.text=name; holder.desc.text= "$id: $descr"
+        holder.chkBx.isChecked=fav
+
+        when (fav){
+            false -> holder.desc.text="$id: $descr # is NOT my fav"
+            true -> holder.desc.text="$id: $descr # is my fav <3"
+        }
         handleListeners(holder, position);
     }
-
+    //-----------------------------------------------
     override fun getItemCount()= data.size
+    //-----------------------------------------------
 
+
+
+
+
+    /*###############################################
+    * -----         C U S T O M A R Y          -----*
+    * =============================================*/
+    fun setDrinksData(drinkData: List<Drink> ){
+        data= drinkData as MutableList<Drink>
+        notifyDataSetChanged()
+    }
+    //-----------------------------------------------
+
+
+
+
+
+    /*###############################################
+    * -----   c o n v e n i e n c e   f u n    -----*
+    * =============================================*/
+    //-----------------------------------------------
+    //-----------------------------------------------
     private fun handleListeners(h:MyViewHolder, position: Int){
         val mainActivity=(ctxt.activity as MainActivity)
-
-        h.view.setOnClickListener{ Toast.makeText(h.view.context, "You tapped row "+(position+1), Toast.LENGTH_SHORT).show()}
-        h.del.setOnClickListener{ data.removeAt(position); notifyItemRemoved(position)}
-        h.edit.setOnClickListener{ Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()}
+        h.view.setOnClickListener{ Toast.makeText(h.view.context, "Drink \"${data[position].name}\" --- ${data[position].desc}", Toast.LENGTH_SHORT).show()}
+        h.del.setOnClickListener{ handleDelListener(h, mainActivity,position);}
+        h.edit.setOnClickListener{ handleEditListener(h, mainActivity, position)  }
         handleChkBxListener(h, mainActivity, position)
     }
+    //-----------------------------------------------
 
 
 
 
 
-    private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){
+    private fun handleEditListener(h: MyRVAdapter.MyViewHolder, mainActivity: MainActivity, position: Int) {
+        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
+
+
+
+        val builder = AlertDialog.Builder(mainActivity)
+        builder.setTitle("Editing Mode").setIcon(R.drawable.edit_drink_icon)
+
+        // I'm using fragment here so I'm using getView() to provide ViewGroup
+        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+        val viewInflated: View = LayoutInflater.from(mainActivity.applicationContext    )
+            .inflate(R.layout.edit_dialogue, h.view as ViewGroup, false)
+        // Set up the input
+        val newName:EditText = viewInflated.findViewById(R.id.editName)
+        val newDesc:EditText = viewInflated.findViewById(R.id.editDesc)
+        val newFav:CheckBox   = viewInflated.findViewById(R.id.editCb)
+
+        newName.setText(data[position].name)
+        newDesc.setText(data[position].desc)
+        newFav.isChecked = data[position].fav
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        builder.setView(viewInflated)
+
+        // Set up the buttons
+
+        builder.setPositiveButton(
+            android.R.string.ok
+        ) { dialog, _ -> dialog.dismiss() }
+
+        builder.setNegativeButton(
+            android.R.string.cancel
+        ) { dialog, _ -> dialog.cancel() }
+
+        builder.show()
+        data[position].name= newName.text.toString()
+        data[position].desc= newDesc.text.toString()
+        data[position].fav= newFav.isChecked
+        GlobalScope.launch {mainActivity.drinkViewModel.upd(data[position]) }
+    }
+    //-----------------------------------------------
+
+
+
+
+
+    //-----------------------------------------------
+    private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){ // TODO: LOGIC CORRECT, WHY NOT WORKING ?
         h.chkBx.setOnClickListener{
-            Log.d("t1", "chkbx enterd: ")
-//            when (mainActivity.selectedFragment()){
-//                0 -> {
-//                    Log.d("t1", "when all frags: ")
-//
-//                    if (h.chkBx.isChecked) {
-//                        Log.d("t1", "if entrd: means unchecking box")
-//                        data[position].fav=true
-//                        mainActivity.dataFav.add(data[position])
-//                        (mainActivity.myFragmentPagerAdapter.getItem(1) as FragmentFav).ada.notifyDataSetChanged()
-//                    }
+            Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
+//            val cbstate=h.chkBx.isChecked
+//            val myDrink=data[position]
+//            when (cbstate){
+//                false -> {
+//                    myDrink.fav=true
+//                    h.chkBx.isChecked=true
 //                }
-//                1 -> {
-//                    data[position].fav=false
-//                    data.removeAt(position); notifyItemRemoved(position)
-//                    (mainActivity.myFragmentPagerAdapter.getItem(0) as FragmentAll).recyclerView.adapter?.notifyDataSetChanged()
+//                true -> {
+//                    myDrink.fav=false
+//                    h.chkBx.isChecked=false
 //                }
 //            }
-
-            val cbstate=h.chkBx.isChecked
-            val myDrink=data[position]
-//            when (mainActivity.selectedFragment()){
-//                0 -> {
-                    when (cbstate){
-                        false -> {
-                            myDrink.fav=true
-                        }
-                        true -> {
-                            myDrink.fav=false
-                        }
-                    }
-//                }
-//                1 -> {
-//                    when (cbstate){
-//                        false -> {
-//
-//                        }
-//                        true -> {
-//
-//                        }
-//                    }
-
+            data[position].fav=h.chkBx.isChecked
             GlobalScope.launch {
-                mainActivity.drinkViewModel.upd(myDrink)
+                mainActivity.drinkViewModel.upd(data[position])
+//                var fragmentAll=(mainActivity.myFragmentPagerAdapter.getItem(0) as FragmentAll)
+//                fragmentAll.ada.setDrinksData(mainActivity.drinkViewModel.mAllDrinks?.value!!)
+//                fragmentAll.ada.notifyDataSetChanged()
+//                var fragmentFav=(mainActivity.myFragmentPagerAdapter.getItem(1) as FragmentFav)
+//                fragmentFav.ada.setDrinksData(mainActivity.drinkViewModel.favDrinks?.value!!)
+//                fragmentFav.ada.notifyDataSetChanged()
             }
+        }
+    }
+    //-----------------------------------------------
+    private fun handleDelListener(h:MyViewHolder, mainActivity: MainActivity, position: Int) {
+        if (mainActivity.myViewPager.currentItem == 0) {
+            GlobalScope.launch {
+                mainActivity.drinkViewModel.del(data[position]);
 
-                }
-//            }
-//        }
+            }
+        }
+        else {
+            handleChkBxListener(h, mainActivity, position) // todo SINCE IT IS UPDATING, WHY NOT REMOVED FROM FAV LIST BY OBSERVER ?
+        }
     }
 }
+
