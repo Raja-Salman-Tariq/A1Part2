@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapp01.db.utils.*
@@ -16,9 +15,9 @@ class FragmentFav(private val drinkViewModel: DrinkViewModel): Fragment() {
     /*###############################################
     * -----        P R O P E R T I E S         -----*
     * =============================================*/
-    lateinit var recyclerView : RecyclerView
-    lateinit var ada : MyRVAdapter
-    lateinit var data:MutableList<Drink>
+    private lateinit var recyclerView : RecyclerView
+    private lateinit var ada : MyRVAdapter
+    private lateinit var data:MutableList<Drink>
     //-----------------------------------------------
 
 
@@ -33,7 +32,7 @@ class FragmentFav(private val drinkViewModel: DrinkViewModel): Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view=inflater.inflate(R.layout.fragment_favs, container, false)
+        val view=inflater.inflate(R.layout.fragment_favs, container, false)
 
         handleRv(view)
 
@@ -42,7 +41,7 @@ class FragmentFav(private val drinkViewModel: DrinkViewModel): Fragment() {
                 ada.setDrinksData(drinks)
             })
         Log.d("oncreateview", "onCreateView in fav: ")
-        return view;
+        return view
     }
     //-----------------------------------------------
 

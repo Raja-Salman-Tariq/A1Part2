@@ -13,7 +13,7 @@ class MyFragmentPagerAdapter(fm: FragmentManager,
                              private val mFragTitles:MutableList<String> = mutableListOf()) : FragmentPagerAdapter(fm){
 
     fun addFrag(frag:Fragment, title:String){
-        mFragList.add(frag);
+        mFragList.add(frag)
         mFragTitles.add(title)
     }
     override fun getCount()=mFragList.size

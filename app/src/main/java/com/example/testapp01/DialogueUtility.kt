@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
-import androidx.lifecycle.LiveData
 import com.example.testapp01.db.utils.Drink
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

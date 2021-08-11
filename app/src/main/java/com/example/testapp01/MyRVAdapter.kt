@@ -1,40 +1,19 @@
 package com.example.testapp01
 
-import android.app.AlertDialog
-import android.app.Application
-import android.content.Context
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.WorkerThread
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.*
-import androidx.room.Room
-
-import androidx.lifecycle.AndroidViewModel
-import androidx.sqlite.db.SupportSQLiteDatabase
-
-import androidx.annotation.NonNull
-
-import androidx.room.RoomDatabase
-import android.os.AsyncTask
 import com.example.testapp01.db.utils.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import android.content.DialogInterface
-import android.text.Editable
-import android.text.InputType
-
-import android.widget.EditText
-import java.security.AccessController.getContext
 
 
-class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
+class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
 
     /*###############################################
     * -----         M A N D A T O R Y          -----*
@@ -42,7 +21,6 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
     //-----------------------------------------------
     //-----------------------------------------------
     class MyViewHolder(val view: View, // default constructor, viewholder elements initialized
-                              val layout:RelativeLayout=view.findViewById(R.id.rowLayout),
                               val name:TextView=view.findViewById(R.id.drinkName),
                               val desc:TextView=view.findViewById(R.id.drinkDesc),
                               val del:ImageButton=view.findViewById(R.id.drinkDel),
@@ -75,7 +53,7 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
             false -> holder.desc.text="$id: $descr # is NOT my fav"
             true -> holder.desc.text="$id: $descr # is my fav <3"
         }
-        handleListeners(holder, position);
+        handleListeners(holder, position)
     }
     //-----------------------------------------------
     override fun getItemCount()= data.size
@@ -106,12 +84,12 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
     private fun handleListeners(h:MyViewHolder, position: Int){
         val mainActivity=(ctxt.activity as MainActivity)
         h.view.setOnClickListener{ Toast.makeText(h.view.context, "Drink \"${data[position].name}\" --- ${data[position].desc}", Toast.LENGTH_SHORT).show()}
-        h.del.setOnClickListener{ handleDelListener(h, mainActivity,position);}
+        h.del.setOnClickListener{ handleDelListener(mainActivity,position);}
         h.edit.setOnClickListener{ handleEditListener(h, mainActivity, position)  }
         handleChkBxListener(h, mainActivity, position)
     }
     //-----------------------------------------------
-    private fun handleEditListener(h: MyRVAdapter.MyViewHolder, mainActivity: MainActivity, position: Int) {
+    private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
 //        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
         DialogueUtility(mainActivity, data, position, h).show()
     }
@@ -123,10 +101,15 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
             GlobalScope.launch {
                 mainActivity.drinkViewModel.upd(data[position])
             }
+            if (ctxt.javaClass==FragmentFav::javaClass){
+                mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
+                        "\nCheck out the all drinks tab to choose some favourites !"
+                mainActivity.tvBuffer.visibility=View.VISIBLE
+            }
         }
     }
     //-----------------------------------------------
-    private fun handleDelListener(h:MyViewHolder, mainActivity: MainActivity, position: Int) {
+    private fun handleDelListener(mainActivity: MainActivity, position: Int) {
         GlobalScope.launch { mainActivity.drinkViewModel.del(data[position]); }
     }
 }

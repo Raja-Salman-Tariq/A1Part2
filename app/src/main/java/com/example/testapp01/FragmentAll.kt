@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapp01.db.utils.*
@@ -16,8 +15,8 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
     * -----        P R O P E R T I E S         -----*
     * =============================================*/
     private lateinit var recyclerView : RecyclerView
-    lateinit var ada : MyRVAdapter
-    lateinit var data:MutableList<Drink>
+    private lateinit var ada : MyRVAdapter
+    private lateinit var data:MutableList<Drink>
     //-----------------------------------------------
 
 
@@ -32,7 +31,7 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view=inflater.inflate(R.layout.fragment_all, container, false)
+        val view=inflater.inflate(R.layout.fragment_all, container, false)
 
         handleRv(view)
 
@@ -40,7 +39,7 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
         ) { drinks -> // Update the cached copy of the words in the adapter. Observe live data
             ada.setDrinksData(drinks)
         }
-        return view;
+        return view
     }
     //-----------------------------------------------
 
@@ -52,7 +51,7 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
     * -----   c o n v e n i e n c e   f u n    -----*
     * =============================================*/
     private fun handleRv(view : View) {                 // typical recycler view setup
-        data= mutableListOf<Drink>()
+        data= mutableListOf()
         recyclerView= view.findViewById(R.id.allRv)
         recyclerView.layoutManager= LinearLayoutManager(this.context)
         

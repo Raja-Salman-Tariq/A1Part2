@@ -1,22 +1,13 @@
 package com.example.testapp01
 
-import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.widget.ImageButton
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.GlobalScope
@@ -29,11 +20,12 @@ class MainActivity : AppCompatActivity() {
     /*###############################################
     * -----        P R O P E R T I E S         -----*
     * =============================================*/
-    lateinit var myFragmentPagerAdapter: MyFragmentPagerAdapter     // fragment+titles list
-    lateinit var myViewPager: ViewPager                             // "eagerly" create+manage "pgs"
-    lateinit var tabLayout: TabLayout                               // horizontal layout+tabs/tabing
-    lateinit var addBtn: ImageButton                                // ...img btn ._.
-    lateinit var drinkViewModel: DrinkViewModel                     // explained in class
+    private lateinit var myFragmentPagerAdapter: MyFragmentPagerAdapter     // fragment+titles list
+    lateinit var myViewPager: ViewPager                                     // "eagerly" create+manage "pgs"
+    private lateinit var tabLayout: TabLayout                               // horizontal layout+tabs/tabing
+    lateinit var addBtn: ImageButton                                        // ...img btn ._.
+    lateinit var drinkViewModel: DrinkViewModel                             // explained in class
+    lateinit var tvBuffer: TextView                                         // info text view
     //-----------------------------------------------
 
 
@@ -45,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     * =============================================*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
         //----------------------
@@ -57,6 +49,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSetup() {
         drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
+        tvBuffer = findViewById(R.id.tvBuffer)
+//        tvBuffer.
 
         handleFrags()       // setUp frag pager ada as well as view pager
 
@@ -96,9 +90,27 @@ class MainActivity : AppCompatActivity() {
 
         tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{     // listener
             override fun onTabSelected(tab: TabLayout.Tab?) {                           // for
+                val tvBuffer=findViewById<TextView>(R.id.tvBuffer)
                 if (myViewPager.currentItem==0) {                                       // addBtn
                     addBtn.visibility=View.INVISIBLE                                    // visibility
                     Log.d("tab", "on fav done w TabSelected: ")
+
+                    if (drinkViewModel.favDrinks?.value?.size==0) {
+                        tvBuffer.text="You haven't marked any favourite drinks. " +
+                                "\nCheck out the all drinks tab to choose some favourites !"
+                        tvBuffer.visibility=View.VISIBLE
+                    }
+                    else
+                        tvBuffer.visibility=View.INVISIBLE
+                }
+                else{                                       // favourites fragment opened
+                    if (drinkViewModel.mAllDrinks?.value?.size==0) {
+                        tvBuffer.text="You have no drinks to list here. " +
+                                "\nTap the button on the top right to add a new drink !"
+                        tvBuffer.visibility=View.VISIBLE
+                    }
+                    else
+                        tvBuffer.visibility=View.INVISIBLE
                 }
             }
 
