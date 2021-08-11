@@ -37,7 +37,7 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
         handleRv(view)
 
         drinkViewModel.mAllDrinks?.observe(viewLifecycleOwner
-        ) { drinks -> // Update the cached copy of the words in the adapter.
+        ) { drinks -> // Update the cached copy of the words in the adapter. Observe live data
             ada.setDrinksData(drinks)
         }
         return view;
@@ -51,7 +51,7 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
     /*###############################################
     * -----   c o n v e n i e n c e   f u n    -----*
     * =============================================*/
-    private fun handleRv(view : View) {
+    private fun handleRv(view : View) {                 // typical recycler view setup
         data= mutableListOf<Drink>()
         recyclerView= view.findViewById(R.id.allRv)
         recyclerView.layoutManager= LinearLayoutManager(this.context)

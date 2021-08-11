@@ -58,11 +58,11 @@ class MainActivity : AppCompatActivity() {
     private fun handleSetup() {
         drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
 
-        handleFrags()
+        handleFrags()       // setUp frag pager ada as well as view pager
 
-        handleTabs()
+        handleTabs()        // get view, add tabs via viewPager, set listener, handle visibility
 
-        handleAddBtn()
+        handleAddBtn()      // get view, add listener
     }
     //-----------------------------------------------
 
@@ -78,19 +78,26 @@ class MainActivity : AppCompatActivity() {
     private fun handleFrags() {
         myViewPager = findViewById(R.id.fragmentContainer)
         setupViewPager(myViewPager)
-        setViewPager(0)
+        myViewPager.currentItem = 0
+    }
+    //-----------------------------------------------
+    private fun setupViewPager(viewPager: ViewPager) {      // simple view pager (ada) setup
+        myFragmentPagerAdapter = MyFragmentPagerAdapter(supportFragmentManager)
+        myFragmentPagerAdapter.addFrag(FragmentAll(drinkViewModel), "All Drinks")
+        myFragmentPagerAdapter.addFrag(FragmentFav(drinkViewModel), "Favourite Drinks")
+        viewPager.adapter = myFragmentPagerAdapter
     }
     //-----------------------------------------------
     private fun handleTabs() {
         tabLayout = findViewById(R.id.myTabLayout)
-        tabLayout.setupWithViewPager(myViewPager)
-        tabLayout.getTabAt(0)?.setIcon(R.drawable.tab_icon_all)
+        tabLayout.setupWithViewPager(myViewPager)                           // internal method
+        tabLayout.getTabAt(0)?.setIcon(R.drawable.tab_icon_all)       // adding new tabs
         tabLayout.getTabAt(1)?.setIcon(R.drawable.tab_icon_fav)
 
-        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (myViewPager.currentItem==0) {
-                    addBtn.visibility=View.INVISIBLE
+        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{     // listener
+            override fun onTabSelected(tab: TabLayout.Tab?) {                           // for
+                if (myViewPager.currentItem==0) {                                       // addBtn
+                    addBtn.visibility=View.INVISIBLE                                    // visibility
                     Log.d("tab", "on fav done w TabSelected: ")
                 }
             }
@@ -108,17 +115,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
     //-----------------------------------------------
-    private fun handleAddBtn() {
-        addBtn = findViewById(R.id.myAddBtn)
-        addBtn.setOnClickListener(View.OnClickListener {
+    private fun handleAddBtn() {                                    // simply gets view, attaches
+        addBtn = findViewById(R.id.myAddBtn)                        //  listener; creates new obj
+        addBtn.setOnClickListener(View.OnClickListener {            //  & inserts into db
             val curr:Int =myViewPager.currentItem
-//            if (curr != 0 && curr != 1)
-//                Toast.makeText(this, "uhh... $curr", Toast.LENGTH_SHORT).show()
-//
-            when (curr) {
-                0 -> Toast.makeText(this, "All acc", Toast.LENGTH_SHORT).show()
-                1 -> Toast.makeText(this, "Fav acc", Toast.LENGTH_SHORT).show()
-            }
 
             val newDrink = Drink(// uses curr
                 0,
@@ -126,19 +126,8 @@ class MainActivity : AppCompatActivity() {
                 "this is ay drink...",
                 curr == 1
             )
-//            Toast.makeText(this, "new drink is fav: ${newDrink.fav}", Toast.LENGTH_SHORT).show()
             GlobalScope.launch {drinkViewModel.insert(newDrink)}
         })
     }
     //-----------------------------------------------
-    private fun setupViewPager(viewPager: ViewPager) {
-        myFragmentPagerAdapter = MyFragmentPagerAdapter(supportFragmentManager)
-        myFragmentPagerAdapter.addFrag(FragmentAll(drinkViewModel), "All Drinks")
-        myFragmentPagerAdapter.addFrag(FragmentFav(drinkViewModel), "Favourite Drinks")
-        viewPager.adapter = myFragmentPagerAdapter
-    }
-    //-----------------------------------------------
-    private fun setViewPager(fragmentPos: Int) {
-        myViewPager.currentItem = fragmentPos
-    }
 }

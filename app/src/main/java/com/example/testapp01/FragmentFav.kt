@@ -53,17 +53,13 @@ class FragmentFav(private val drinkViewModel: DrinkViewModel): Fragment() {
     /*###############################################
     * -----   c o n v e n i e n c e   f u n    -----*
     * =============================================*/
-    private fun handleRv(view : View) {
+    private fun handleRv(view : View) {                 // typical recycler view setup
         data= mutableListOf()
         recyclerView= view.findViewById(R.id.favsRv)
         recyclerView.layoutManager= LinearLayoutManager(this.context)
         ada = MyRVAdapter(this, data)
         recyclerView.adapter=ada
 
-    }
-
-    fun acquireData(drinks:List<Drink>) {
-        ada.setDrinksData(drinks)
     }
     //-----------------------------------------------
 }

@@ -112,48 +112,13 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
     }
     //-----------------------------------------------
     private fun handleEditListener(h: MyRVAdapter.MyViewHolder, mainActivity: MainActivity, position: Int) {
-        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
-
-        val builder = AlertDialog.Builder(mainActivity)
-        builder.setTitle("Editing Mode").setIcon(R.drawable.edit_drink_icon)
-
-        // I'm using fragment here so I'm using getView() to provide ViewGroup
-        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
-        val viewInflated: View = LayoutInflater.from(mainActivity.applicationContext    )
-            .inflate(R.layout.edit_dialogue, h.view as ViewGroup, false)
-        // Set up the input
-        val newName:EditText = viewInflated.findViewById(R.id.editName)
-        val newDesc:EditText = viewInflated.findViewById(R.id.editDesc)
-        val newFav:CheckBox   = viewInflated.findViewById(R.id.editCb)
-
-        newName.setText(data[position].name)
-        newDesc.setText(data[position].desc)
-        newFav.isChecked = data[position].fav
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        builder.setView(viewInflated)
-
-        // Set up the buttons
-
-        builder.setPositiveButton(
-            android.R.string.ok
-        ) { dialog, _ ->
-            dialog.dismiss()
-            data[position].name= newName.text.toString()
-            data[position].desc= newDesc.text.toString()
-            data[position].fav= newFav.isChecked
-            GlobalScope.launch {mainActivity.drinkViewModel.upd(data[position]) }
-        }
-
-        builder.setNegativeButton(
-            android.R.string.cancel
-        ) { dialog, _ -> dialog.cancel() }
-
-        builder.show()
+//        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
+        DialogueUtility(mainActivity, data, position, h).show()
     }
     //-----------------------------------------------
     private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){ // TODO: LOGIC CORRECT, WHY NOT WORKING ?
         h.chkBx.setOnClickListener{
-            Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
+//            Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
             data[position].fav=h.chkBx.isChecked
             GlobalScope.launch {
                 mainActivity.drinkViewModel.upd(data[position])
