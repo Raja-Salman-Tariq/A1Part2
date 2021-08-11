@@ -52,8 +52,17 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
     //-----------------------------------------------
     // Create a new view, which defines the UI of the list item
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):MyViewHolder{
-        return MyViewHolder(LayoutInflater.from(parent.context)
+
+        val viewHolder= MyViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_view, parent, false))
+
+        if (ctxt.javaClass==FragmentFav::class.java){
+            Log.d("favFrag", "onCreateViewHolder: it holds tru")
+            viewHolder.edit.visibility=(View.INVISIBLE)
+            viewHolder.del.visibility=(View.INVISIBLE)
+        }
+
+        return viewHolder
     }
     //-----------------------------------------------
     // actual interactions with view; ie setting and changing of the view / listeners
@@ -102,15 +111,8 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
         handleChkBxListener(h, mainActivity, position)
     }
     //-----------------------------------------------
-
-
-
-
-
     private fun handleEditListener(h: MyRVAdapter.MyViewHolder, mainActivity: MainActivity, position: Int) {
         Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
-
-
 
         val builder = AlertDialog.Builder(mainActivity)
         builder.setTitle("Editing Mode").setIcon(R.drawable.edit_drink_icon)
@@ -134,63 +136,33 @@ class MyRVAdapter(private val ctxt : Fragment, var data:MutableList<Drink>):Recy
 
         builder.setPositiveButton(
             android.R.string.ok
-        ) { dialog, _ -> dialog.dismiss() }
+        ) { dialog, _ ->
+            dialog.dismiss()
+            data[position].name= newName.text.toString()
+            data[position].desc= newDesc.text.toString()
+            data[position].fav= newFav.isChecked
+            GlobalScope.launch {mainActivity.drinkViewModel.upd(data[position]) }
+        }
 
         builder.setNegativeButton(
             android.R.string.cancel
         ) { dialog, _ -> dialog.cancel() }
 
         builder.show()
-        data[position].name= newName.text.toString()
-        data[position].desc= newDesc.text.toString()
-        data[position].fav= newFav.isChecked
-        GlobalScope.launch {mainActivity.drinkViewModel.upd(data[position]) }
     }
-    //-----------------------------------------------
-
-
-
-
-
     //-----------------------------------------------
     private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){ // TODO: LOGIC CORRECT, WHY NOT WORKING ?
         h.chkBx.setOnClickListener{
             Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
-//            val cbstate=h.chkBx.isChecked
-//            val myDrink=data[position]
-//            when (cbstate){
-//                false -> {
-//                    myDrink.fav=true
-//                    h.chkBx.isChecked=true
-//                }
-//                true -> {
-//                    myDrink.fav=false
-//                    h.chkBx.isChecked=false
-//                }
-//            }
             data[position].fav=h.chkBx.isChecked
             GlobalScope.launch {
                 mainActivity.drinkViewModel.upd(data[position])
-//                var fragmentAll=(mainActivity.myFragmentPagerAdapter.getItem(0) as FragmentAll)
-//                fragmentAll.ada.setDrinksData(mainActivity.drinkViewModel.mAllDrinks?.value!!)
-//                fragmentAll.ada.notifyDataSetChanged()
-//                var fragmentFav=(mainActivity.myFragmentPagerAdapter.getItem(1) as FragmentFav)
-//                fragmentFav.ada.setDrinksData(mainActivity.drinkViewModel.favDrinks?.value!!)
-//                fragmentFav.ada.notifyDataSetChanged()
             }
         }
     }
     //-----------------------------------------------
     private fun handleDelListener(h:MyViewHolder, mainActivity: MainActivity, position: Int) {
-        if (mainActivity.myViewPager.currentItem == 0) {
-            GlobalScope.launch {
-                mainActivity.drinkViewModel.del(data[position]);
-
-            }
-        }
-        else {
-            handleChkBxListener(h, mainActivity, position) // todo SINCE IT IS UPDATING, WHY NOT REMOVED FROM FAV LIST BY OBSERVER ?
-        }
+        GlobalScope.launch { mainActivity.drinkViewModel.del(data[position]); }
     }
 }
 

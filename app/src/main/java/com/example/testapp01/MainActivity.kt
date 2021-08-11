@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity() {
     //-----------------------------------------------
     //-----------------------------------------------
     private fun handleFrags() {
-//        myFragmentPagerAdapter = MyFragmentPagerAdapter(supportFragmentManager)
         myViewPager = findViewById(R.id.fragmentContainer)
         setupViewPager(myViewPager)
         setViewPager(0)
@@ -88,24 +87,25 @@ class MainActivity : AppCompatActivity() {
         tabLayout.getTabAt(0)?.setIcon(R.drawable.tab_icon_all)
         tabLayout.getTabAt(1)?.setIcon(R.drawable.tab_icon_fav)
 
-//        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{
-//            override fun onTabSelected(tab: TabLayout.Tab?) {
-//                if (myViewPager.currentItem==0) {
-//                    Log.d("tab", "on fav TabSelected: ")
-//                    (myFragmentPagerAdapter.getItem(1) as FragmentFav)
-//                        .acquireData((myFragmentPagerAdapter.getItem(0) as FragmentAll).data)
-//                    Log.d("tab", "on fav done w TabSelected: ")
-//                }
-//            }
-//
-//            override fun onTabUnselected(tab: TabLayout.Tab?) {
-//                Log.d("tab", "onTabUnselected: ")
-//            }
-//
-//            override fun onTabReselected(tab: TabLayout.Tab?) {
-//                Log.d("tab", "onTabReselected: ")
-//            }
-//        })
+        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if (myViewPager.currentItem==0) {
+                    addBtn.visibility=View.INVISIBLE
+                    Log.d("tab", "on fav done w TabSelected: ")
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                if (myViewPager.currentItem==1) {
+                    addBtn.visibility = View.VISIBLE
+                    Log.d("tab", "onTabUnselected: ")
+                }
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                Log.d("tab", "onTabReselected: ")
+            }
+        })
     }
     //-----------------------------------------------
     private fun handleAddBtn() {
