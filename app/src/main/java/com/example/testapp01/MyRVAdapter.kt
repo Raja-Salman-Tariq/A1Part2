@@ -110,6 +110,10 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     }
     //-----------------------------------------------
     private fun handleDelListener(mainActivity: MainActivity, position: Int) {
+        if (mainActivity.drinkViewModel.mAllDrinks?.value?.size!! <=1) {
+            mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
+                    "\nCheck out the all drinks tab to choose some favourites !"
+        }
         GlobalScope.launch { mainActivity.drinkViewModel.del(data[position]); }
     }
 }

@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private fun handleSetup() {
         drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
         tvBuffer = findViewById(R.id.tvBuffer)
-//        tvBuffer.
 
         handleFrags()       // setUp frag pager ada as well as view pager
 
@@ -104,9 +103,9 @@ class MainActivity : AppCompatActivity() {
                         tvBuffer.visibility=View.INVISIBLE
                 }
                 else{                                       // favourites fragment opened
+                    tvBuffer.text="You have no drinks to list here. " +
+                            "\nTap the button on the top right to add a new drink !"
                     if (drinkViewModel.mAllDrinks?.value?.size==0) {
-                        tvBuffer.text="You have no drinks to list here. " +
-                                "\nTap the button on the top right to add a new drink !"
                         tvBuffer.visibility=View.VISIBLE
                     }
                     else
@@ -130,6 +129,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleAddBtn() {                                    // simply gets view, attaches
         addBtn = findViewById(R.id.myAddBtn)                        //  listener; creates new obj
         addBtn.setOnClickListener(View.OnClickListener {            //  & inserts into db
+            tvBuffer.visibility=View.INVISIBLE
             val curr:Int =myViewPager.currentItem
 
             val newDrink = Drink(// uses curr
