@@ -68,11 +68,13 @@ class MainActivity : AppCompatActivity() {
 
         drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
         drinkViewModel.mAllDrinks?.observe(this
-        ) { if (drinkViewModel.mAllDrinks?.value?.isEmpty() == true)
-            tvBuffer.visibility=View.VISIBLE
-            else
-            tvBuffer.visibility=View.INVISIBLE
-
+        ) {
+            if (myViewPager.currentItem==0) {
+                if (drinkViewModel.mAllDrinks?.value?.isEmpty() == true)
+                    tvBuffer.visibility = View.VISIBLE
+                else
+                    tvBuffer.visibility = View.INVISIBLE
+            }
         }
 
         handleFrags()       // setUp frag pager ada as well as view pager
