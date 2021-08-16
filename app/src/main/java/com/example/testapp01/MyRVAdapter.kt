@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 
 class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
 
+    lateinit var anotherViewHolder:MyViewHolder
+
     /*###############################################
     * -----         M A N D A T O R Y          -----*
     * =============================================*/
@@ -40,19 +42,16 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
             viewHolder.del.visibility=(View.INVISIBLE)
         }
 
+        anotherViewHolder=viewHolder
+
         return viewHolder
     }
     //-----------------------------------------------
     // actual interactions with view; ie setting and changing of the view / listeners
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val (id, name, descr, fav)=data[position]
-        holder.name.text=name; holder.desc.text= "$id: $descr"
+        holder.name.text=name; holder.desc.text= descr
         holder.chkBx.isChecked=fav
-
-        when (fav){
-            false -> holder.desc.text="$id: $descr # is NOT my fav"
-            true -> holder.desc.text="$id: $descr # is my fav <3"
-        }
         handleListeners(holder, position)
     }
     //-----------------------------------------------
@@ -83,7 +82,7 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     //-----------------------------------------------
     private fun handleListeners(h:MyViewHolder, position: Int){
         val mainActivity=(ctxt.activity as MainActivity)
-        h.view.setOnClickListener{ Toast.makeText(h.view.context, "Drink \"${data[position].name}\" --- ${data[position].desc}", Toast.LENGTH_SHORT).show()}
+        h.view.setOnClickListener{ DialogueUtility(mainActivity, "My Drink", R.drawable.drink_icon, data[position] ).show()}
         h.del.setOnClickListener{ handleDelListener(mainActivity,position);}
         h.edit.setOnClickListener{ handleEditListener(h, mainActivity, position)  }
         handleChkBxListener(h, mainActivity, position)
@@ -91,28 +90,29 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     //-----------------------------------------------
     private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
 //        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
-        DialogueUtility(mainActivity, data, position, h).show()
+        DialogueUtility(mainActivity, data, position, "Edit Drink", R.drawable.edit_drink_icon).show()
     }
     //-----------------------------------------------
-    private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){ // TODO: LOGIC CORRECT, WHY NOT WORKING ?
+    private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){
         h.chkBx.setOnClickListener{
+            if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass==FragmentFav::class.java) {
+                mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
+                "\nCheck out the all drinks tab to choose some favourites !"
+                mainActivity.tvBuffer.visibility=View.VISIBLE
+            }
 //            Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
             data[position].fav=h.chkBx.isChecked
             GlobalScope.launch {
                 mainActivity.drinkViewModel.upd(data[position])
-            }
-            if (ctxt.javaClass==FragmentFav::javaClass){
-                mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
-                        "\nCheck out the all drinks tab to choose some favourites !"
-                mainActivity.tvBuffer.visibility=View.VISIBLE
             }
         }
     }
     //-----------------------------------------------
     private fun handleDelListener(mainActivity: MainActivity, position: Int) {
         if (mainActivity.drinkViewModel.mAllDrinks?.value?.size!! <=1) {
-            mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
-                    "\nCheck out the all drinks tab to choose some favourites !"
+            mainActivity.tvBuffer.text="You have no drinks to list here. " +
+            "\nTap the button on the top right to add a new drink !"
+            mainActivity.tvBuffer.visibility=View.VISIBLE
         }
         GlobalScope.launch { mainActivity.drinkViewModel.del(data[position]); }
     }

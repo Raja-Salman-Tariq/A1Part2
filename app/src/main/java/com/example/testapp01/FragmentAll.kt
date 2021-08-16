@@ -15,7 +15,7 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
     * -----        P R O P E R T I E S         -----*
     * =============================================*/
     private lateinit var recyclerView : RecyclerView
-    private lateinit var ada : MyRVAdapter
+    lateinit var ada : MyRVAdapter
     private lateinit var data:MutableList<Drink>
     //-----------------------------------------------
 
