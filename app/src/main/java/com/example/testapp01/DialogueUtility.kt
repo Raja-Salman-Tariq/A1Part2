@@ -1,32 +1,22 @@
 package com.example.testapp01
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import com.example.testapp01.db.utils.Drink
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import com.google.android.material.snackbar.Snackbar
-import android.text.Editable
-
-
-
-
 
 
 
 
 // Simply a helper class
 //  just uses a typical AlertDialogBox implementation for the edit dialog box
-class DialogueUtility(val context: Context,
+class DialogueUtility(context: Context,
                       title:String, iconID:Int,
                       private var builder: AlertDialog.Builder?=null) {
 
@@ -43,6 +33,30 @@ class DialogueUtility(val context: Context,
         builder!!.setNegativeButton(
             android.R.string.cancel
         ) { dialog, _ -> dialog.cancel()}
+
+//        val myTitle:TextView = viewInflated.findViewById(R.id.dialogTitle)
+//        val myIcon:ImageView = viewInflated.findViewById(R.id.dialogIcon)
+//
+//        myTitle.text = title
+//        myIcon.setImageResource(iconID)
+//        myIcon.scaleX= 1.25F
+//        myIcon.scaleY=1.25f
+
+        builder?.setView(viewInflated)
+
+//        val dialog:Dialog= builder!!.create()//.getWindow()?.setBackgroundDrawable(ColorDrawable(Color.YELLOW));
+
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        dialog.setContentView(R.layout.edit_dialogue)
+//        val v: View? = dialog.window?.decorView
+//        v?.setBackgroundResource(android.R.color.transparent)
+
+
+//        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        viewInflated.background=(context as MainActivity).findViewById<Drawable>(R.drawable.dialogue_utility_bg)
+//        val v: View = netscape.javascript.JSObject.getWindow().getDecorView()
+//        viewInflated.setBackgroundResource(R.drawable.dialogue_utility_bg)
     }
 
     fun show() {
@@ -67,7 +81,6 @@ class DialogueUtility(val context: Context,
         newDesc.keyListener=null
         newFav.keyListener=null
 
-        builder?.setView(viewInflated)
 
         builder?.setNegativeButton(
             android.R.string.ok
@@ -89,7 +102,6 @@ class DialogueUtility(val context: Context,
         newDesc.setHint("Drink Description...")
         newFav.isChecked = !drink.fav
 
-        builder?.setView(viewInflated)
 
         builder?.setPositiveButton(
             android.R.string.ok
@@ -154,7 +166,6 @@ class DialogueUtility(val context: Context,
         newDesc.setText(data[position].desc)
         newFav.isChecked = data[position].fav
 
-        builder?.setView(viewInflated)
 
         // Set up the buttons
 

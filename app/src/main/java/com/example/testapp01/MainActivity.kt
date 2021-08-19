@@ -1,8 +1,9 @@
 package com.example.testapp01
 
-import android.app.AlertDialog
-import android.app.Dialog
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,16 +12,16 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import com.example.testapp01.db.utils.*
-import android.graphics.drawable.ColorDrawable
-
-import android.content.Intent
-import androidx.fragment.app.FragmentActivity
-import android.content.DialogInterface
 import android.view.*
-import androidx.lifecycle.lifecycleScope
+import android.widget.Toast
+import androidx.core.content.getSystemService
+import com.example.testapp01.notificationpkg.AlertRcvr
+import com.example.testapp01.retrofit.JsonPlaceholderApi
+import com.example.testapp01.retrofit.Post
+import retrofit2.*
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,8 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout                               // horizontal layout+tabs/tabing
     lateinit var addBtn: ImageButton                                        // ...img btn ._.
     lateinit var drinkViewModel: DrinkViewModel                             // explained in class
-    lateinit var tvBuffer: TextView
-    // info text view
+    lateinit var tvBuffer: TextView                                         // info text view
+
 
     //-----------------------------------------------
 
@@ -64,9 +65,39 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun handleSetup() {
+
+        handleAlarmMgr()
+
+        handleViewModelAndTvBuffer()
+
+        handleFrags()       // setUp frag pager ada as well as view pager
+
+        handleTabs()        // get view, add tabs via viewPager, set listener, handle visibility
+
+        handleAddBtn()      // get view, add listener
+    }
+
+    private fun handleAlarmMgr() {
+        val alarMgr = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, AlertRcvr::class.java)
+        val pendIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+
+        alarMgr?.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, pendIntent)
+    }
+
+
+    private fun handleViewModelAndTvBuffer() {
         tvBuffer = findViewById(R.id.tvBuffer)
 
         drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
+
+        if (drinkViewModel.mAllDrinks?.value?.isEmpty() == true){
+            Toast.makeText(this, "emptyyyy", Toast.LENGTH_SHORT).show()
+            tvBuffer.text = "You have no drinks to list here. " +
+                    "\nTap the button on the top right to add a new drink !"
+            tvBuffer.visibility=View.VISIBLE
+        }
+
         drinkViewModel.mAllDrinks?.observe(this
         ) {
             if (myViewPager.currentItem==0) {
@@ -76,12 +107,6 @@ class MainActivity : AppCompatActivity() {
                     tvBuffer.visibility = View.INVISIBLE
             }
         }
-
-        handleFrags()       // setUp frag pager ada as well as view pager
-
-        handleTabs()        // get view, add tabs via viewPager, set listener, handle visibility
-
-        handleAddBtn()      // get view, add listener
     }
     //-----------------------------------------------
 

@@ -23,4 +23,7 @@ interface DrinkDao {
     @Query("DELETE FROM Drink")
     fun delAll()
 
+    @Insert
+    fun addDrinks(drinks: List<Drink>)
+
 }
