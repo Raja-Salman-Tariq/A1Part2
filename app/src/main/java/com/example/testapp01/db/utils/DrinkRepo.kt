@@ -5,6 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
+import com.example.testapp01.retrofit.Comment
+import com.example.testapp01.retrofit.CommentDao
 import com.example.testapp01.retrofit.JsonPlaceholderApi
 import com.example.testapp01.retrofit.Post
 import kotlinx.coroutines.GlobalScope
@@ -23,17 +25,28 @@ import retrofit2.converter.gson.GsonConverterFactory
 class DrinkRepo(
     private val application: Application?,
     private val drinkDao: DrinkDao? = DrinkDB.getDatabase(application)?.getDrinkDao(),
+    private val commentDao: CommentDao? = DrinkDB.getDatabase(application)?.getCommentDao(),
     private var jsonPlaceholderApi: JsonPlaceholderApi?=null,
     private var allDrinks: LiveData<List<Drink>>?=null,
-    private var favDrinks: LiveData<List<Drink>>?=null
+    private var favDrinks: LiveData<List<Drink>>?=null,
+    private var drinkToGet:LiveData<List<Drink>>?=null,
+    private var comments:  LiveData<List<Comment>>?=null
 ){
 
     init{
         jsonPlaceholderApi=handleRetrofit()
+//        jsonPlaceholderApi?.getRemoteData()
         getRemoteData()
+        getRemoteComments()
         allDrinks=drinkDao?.getAll()
         favDrinks=drinkDao?.getFavs()
+        drinkToGet=drinkDao?.getDrink()
+        comments=commentDao?.getDrinkComments()
     }
+
+    //============================================================
+    //---------        D R I N K       F U N C S     ------------
+    //============================================================
 
     fun getAll(): LiveData<List<Drink>>? { // TODO : SHOULD THESE ALSO BE SUSPEND FUNS ?
         return allDrinks
@@ -41,6 +54,14 @@ class DrinkRepo(
 
     fun getFavs(): LiveData<List<Drink>>? {
         return favDrinks
+    }
+
+    fun getDrink(): LiveData<List<Drink>>? {
+        return drinkToGet
+    }
+
+    fun getComments(): LiveData<List<Comment>>?{
+        return comments
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -67,8 +88,26 @@ class DrinkRepo(
         drinkDao?.addDrinks(drinks)
     }
 
+    //============================================================
+    //---------          C M N T       F U N C S     ------------
+    //============================================================
+
+//    fun getDrinkComments(): LiveData<List<Comment>>?{
+//        return commentDao?.getDrinkComments()
+//    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insertAllComments(comments: List<Comment>) {
+        commentDao?.addComments(comments)
+    }
+
     @WorkerThread
     fun getRemoteData(){
+//        GlobalScope.launch {
+//            insertAll(jsonPlaceholderApi?.getRemoteData() as List<Drink>)
+//        }
+
         val call= jsonPlaceholderApi?.getPosts()
         call?.enqueue(object: Callback<List<Post>> {
             override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
@@ -76,9 +115,6 @@ class DrinkRepo(
                     Toast.makeText(application?.applicationContext, "Responce unsuccessful", Toast.LENGTH_SHORT).show()
 
                 else {
-                    var n=getAll()?.value?.size
-                    if (n==null)
-                        n=10
                     val body = response.body()?.dropLast(response.body()?.size!! -10)
                     val remoteData = ArrayList<Drink>()
                     if (body != null) {
@@ -102,6 +138,74 @@ class DrinkRepo(
             }
         })
     }
+
+    @WorkerThread
+    fun getRemoteComments(){
+        val call= jsonPlaceholderApi?.getComments()
+        call?.enqueue(object: Callback<List<Comment>> {
+            override fun onResponse(call: Call<List<Comment>>, response: Response<List<Comment>>) {
+                if (!response.isSuccessful) {
+//                    Toast.makeText(this.get, "Responce unsuccessful", Toast.LENGTH_SHORT).show()
+                    Log.d("retro", "onResponse responce unsuccessful: ")
+                }
+
+                else {
+                    val remoteData = ArrayList<Comment>()
+                    val body = response.body()?.dropLast(response.body()?.size!! -10)
+                    if (body != null) {
+                        for (comment:Comment in body)
+                            remoteData.add(Comment(comment))
+                        GlobalScope.launch {
+                            insertAllComments(remoteData)
+                        }
+                    }
+                }
+
+            }
+
+            override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
+//                Toast.makeText(application?.applicationContext, "Responce failed", Toast.LENGTH_SHORT).show()
+                Log.d("rerto", "onFailure: no internet")
+            }
+        })
+    }
+
+//
+//    @WorkerThread
+//    fun getRemoteComments(){
+//        val call= jsonPlaceholderApi?.getPosts()
+//        call?.enqueue(object: Callback<List<Post>> {
+//            override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
+//                if (!response.isSuccessful)
+//                    Toast.makeText(application?.applicationContext, "Responce unsuccessful", Toast.LENGTH_SHORT).show()
+//
+//                else {
+//                    var n=getAll()?.value?.size
+//                    if (n==null)
+//                        n=10
+//                    val body = response.body()?.dropLast(response.body()?.size!! -10)
+//                    val remoteData = ArrayList<Drink>()
+//                    if (body != null) {
+//                        for (post:Post in body)
+//                            remoteData.add(Drink(0,post))
+//                        //                    Toast.makeText(baseContext,
+//                        //                        "ID: "+post?.id+"\nuID: "+post?.userId+"\ntitle: "+post?.title+"\nText: "+post?.text,
+//                        //                        Toast.LENGTH_LONG).show()
+//                        GlobalScope.launch {
+//                            insertAll(remoteData)
+//                        }
+//                    }
+//
+//                }
+//
+//            }
+//
+//            override fun onFailure(call: Call<List<Post>>, t: Throwable) {
+////                Toast.makeText(application?.applicationContext, "Responce failed", Toast.LENGTH_SHORT).show()
+//                Log.d("rerto", "onFailure: no internet")
+//            }
+//        })
+//    }
 
 }
 

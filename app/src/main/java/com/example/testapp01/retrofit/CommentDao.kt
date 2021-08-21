@@ -5,28 +5,25 @@ import androidx.room.*
 
 @Dao
 public interface CommentDao {
-//    @Insert
-//    fun addDrink(drink: Drink)
-//
-//    @Delete
-//    fun deleteDrink(drink: Drink)
-//
-//    @Update
-//    fun updateDrink(drink:Drink)
-//
-//    @Update
-//    fun toggleFav(drink: Drink)
-//
-//    @Query("SELECT * FROM Drink WHERE fav=1 ORDER BY name ASC")
-//    fun getFavs(): LiveData<List<Drink>>
-//
-//    @Query("SELECT * FROM Drink ORDER BY name ASC")
-//    fun getAll(): LiveData<List<Drink>>
-//
-//    @Query("DELETE FROM Drink")
-//    fun delAll()
-//
-//    @Insert
-//    fun addDrinks(drinks: List<Drink>)
+    @Insert
+    fun addComment(comment: Comment)
+
+    @Delete
+    fun deleteComment(comment: Comment)
+
+    @Update
+    fun updateComment(comment:Comment)
+
+    @Query("SELECT * FROM Comment WHERE drinkId IN (SELECT id FROM Drink WHERE toGet=1) ORDER BY id ASC")
+    fun getDrinkComments(): LiveData<List<Comment>>
+
+    @Query("SELECT * FROM Comment ORDER BY name ASC")
+    fun getAll(): LiveData<List<Comment>>
+
+    @Query("DELETE FROM Comment")
+    fun delAll()
+
+    @Insert
+    fun addComments(Comments: List<Comment>)
 
 }

@@ -1,15 +1,16 @@
-package com.example.testapp01
+package com.example.testapp01.rv_adapters
 
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.testapp01.*
 import com.example.testapp01.db.utils.*
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.GlobalScope
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
 
-    lateinit var anotherViewHolder:MyViewHolder
+    lateinit var anotherViewHolder: MyViewHolder
 
     /*###############################################
     * -----         M A N D A T O R Y          -----*
@@ -26,20 +27,20 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     //-----------------------------------------------
     //-----------------------------------------------
     class MyViewHolder(val view: View, // default constructor, viewholder elements initialized
-                              val name:TextView=view.findViewById(R.id.drinkName),
-                              val desc:TextView=view.findViewById(R.id.drinkDesc),
-                              val del:ImageButton=view.findViewById(R.id.drinkDel),
-                              val favIcon:ImageView=view.findViewById(R.id.favIcon),
+                       val name:TextView=view.findViewById(R.id.drinkName),
+                       val desc:TextView=view.findViewById(R.id.drinkDesc),
+                       val del:ImageButton=view.findViewById(R.id.drinkDel),
+                       val favIcon:ImageView=view.findViewById(R.id.favIcon),
                        val drinkImg:CircleImageView=view.findViewById(R.id.drinkImage)
                             ):RecyclerView.ViewHolder(view)
     //-----------------------------------------------
     // Create a new view, which defines the UI of the list item
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):MyViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
 
         val viewHolder= MyViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_view, parent, false))
 
-        if (ctxt.javaClass==FragmentFav::class.java){
+        if (ctxt.javaClass== FragmentFav::class.java){
             Log.d("favFrag", "onCreateViewHolder: it holds tru")
             viewHolder.del.visibility=(View.INVISIBLE)
         }
@@ -93,19 +94,36 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     * =============================================*/
     //-----------------------------------------------
     //-----------------------------------------------
-    private fun handleListeners(h:MyViewHolder, position: Int){
+    private fun handleListeners(h: MyViewHolder, position: Int){
         val mainActivity=(ctxt.activity as MainActivity)
-        h.view.setOnClickListener{ DialogueUtility(mainActivity, "My Drink", R.drawable.drink_icon, data[position] ).show()}
+//        h.view.setOnClickListener{ DialogueUtility(mainActivity, "My Drink", R.drawable.drink_icon, data[position] ).show()}
+        h.view.setOnClickListener { startDetailsActivity(mainActivity, data[position]) }
         h.del.setOnClickListener{ handleDelListener(mainActivity,position);}
         handleFavListener(h, mainActivity, position)
     }
+    //-----------------------------------------------
+
+    private fun startDetailsActivity(mainActivity: MainActivity, drink: Drink) {
+        drink.toGet=true
+        
+        GlobalScope.launch {
+            mainActivity.drinkViewModel.upd(drink)
+        }
+
+        ctxt.startActivity(
+            Intent(ctxt.activity, DetailsActivity::class.java)
+                .apply {
+                    putExtra("id", drink.id)
+                })
+    }
+
     //-----------------------------------------------
     private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
 //        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
         DialogueUtility(mainActivity, data, position, "Edit Drink", R.drawable.edit_drink_icon).show()
     }
     //-----------------------------------------------
-    private fun handleFavListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){
+    private fun handleFavListener(h: MyViewHolder, mainActivity: MainActivity, position: Int){
         h.favIcon.setOnClickListener{
 //            Toast.makeText(h.view.context, "Tapped!", Toast.LENGTH_SHORT).show()
 
@@ -139,7 +157,7 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
             //        Log.d("showw","After: size=${data.size},\ttag=${h.favIcon.tag}  ")
         Toast.makeText(h.view.context, "After: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
             Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
-            if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass==FragmentFav::class.java) {
+            if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass== FragmentFav::class.java) {
                 mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
                         "\nCheck out the all drinks tab to choose some favourites !"
                 mainActivity.tvBuffer.visibility=View.VISIBLE

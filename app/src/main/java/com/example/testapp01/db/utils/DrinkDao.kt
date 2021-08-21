@@ -2,6 +2,7 @@ package com.example.testapp01.db.utils
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.testapp01.retrofit.Comment
 
 @Dao
 interface DrinkDao {
@@ -28,5 +29,8 @@ interface DrinkDao {
 
     @Insert
     fun addDrinks(drinks: List<Drink>)
+
+    @Query("SELECT * FROM Drink WHERE toGet=1")
+    fun getDrink() : LiveData<List<Drink>>
 
 }

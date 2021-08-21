@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapp01.db.utils.*
+import com.example.testapp01.rv_adapters.MyRVAdapter
 
 class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
 
