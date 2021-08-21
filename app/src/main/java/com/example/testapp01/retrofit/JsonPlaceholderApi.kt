@@ -8,4 +8,7 @@ public interface JsonPlaceholderApi {
 
     @GET("posts")
     fun getPosts(): Call<List<Post>>
+
+    @GET("comments")
+    fun getComments(): Call<List<Comment>>
 }

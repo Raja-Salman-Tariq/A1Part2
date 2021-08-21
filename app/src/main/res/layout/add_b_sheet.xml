@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    app:behavior_hideable="true"
+    android:background="#C8B78F"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addBtnName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxStrokeColor="#6200EE"
+        android:outlineAmbientShadowColor="#6200EE"
+        android:hint="Add Name"
+        app:errorEnabled="true"
+        app:boxStrokeErrorColor="#EE0000"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/addNameInp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addBtnDesc"
+        app:boxStrokeColor="#6200EE"
+        android:outlineAmbientShadowColor="#6200EE"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Add Description"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginTop="25dp"
+        app:errorEnabled="true"
+        app:boxStrokeErrorColor="#EE0000"
+        app:layout_constraintTop_toBottomOf="@id/addBtnName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/addDescInp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/addBtnFavTxt"
+        android:tag="unfavourite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is a favourite: "
+        android:textColor="#313638"
+        android:layout_marginLeft="75dp"
+        app:layout_constraintTop_toBottomOf="@id/addBtnDesc"
+        android:layout_marginTop="25dp"
+        app:layout_constraintRight_toLeftOf="@id/addBtnFav"
+        app:layout_constraintEnd_toStartOf="@id/addBtnFav"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/addBtnFav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:scaleX="1.75"
+        android:scaleY="1.75"
+        android:layout_marginRight="75dp"
+        android:src="@drawable/unfavourite_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/addBtnFavTxt"
+        app:layout_constraintStart_toEndOf="@id/addBtnFavTxt"
+        app:layout_constraintTop_toBottomOf="@id/addBtnDesc" />
+
+    <ImageButton
+        android:id="@+id/addBtnAddBtn"
+        android:layout_marginTop="75dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:scaleX="2.25"
+        android:scaleY="2.25"
+        android:src="@drawable/add_tick"
+        app:layout_constraintTop_toBottomOf="@id/addBtnDesc"
+        app:layout_constraintStart_toEndOf="@id/addBtnCancelBtn"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/addBtnCancelBtn"
+        android:layout_marginTop="75dp"
+        app:layout_constraintTop_toBottomOf="@id/addBtnDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:scaleX="2.25"
+        android:scaleY="2.25"
+        android:src="@drawable/add_cancel"
+        app:layout_constraintEnd_toStartOf="@+id/addBtnAddBtn"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.example.testapp01.db.utils
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
@@ -77,12 +78,12 @@ class DrinkRepo(
                 else {
                     var n=getAll()?.value?.size
                     if (n==null)
-                        n=0
+                        n=10
                     val body = response.body()?.dropLast(response.body()?.size!! -10)
                     val remoteData = ArrayList<Drink>()
                     if (body != null) {
                         for (post:Post in body)
-                            remoteData.add(Drink(n++,post))
+                            remoteData.add(Drink(0,post))
                 //                    Toast.makeText(baseContext,
                 //                        "ID: "+post?.id+"\nuID: "+post?.userId+"\ntitle: "+post?.title+"\nText: "+post?.text,
                 //                        Toast.LENGTH_LONG).show()
@@ -96,7 +97,8 @@ class DrinkRepo(
             }
 
             override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                Toast.makeText(application?.applicationContext, "Responce failed", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(application?.applicationContext, "Responce failed", Toast.LENGTH_SHORT).show()
+                Log.d("rerto", "onFailure: no internet")
             }
         })
     }

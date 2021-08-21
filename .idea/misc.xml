@@ -4,17 +4,32 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/add_btn.xml" value="0.3880208333333333" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/circle_view.xml" value="0.14285714285714285" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/delete_drink_icon.xml" value="0.2630208333333333" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/dialogue_utility_bg.xml" value="0.29739583333333336" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/edit_drink_icon.xml" value="0.3255208333333333" />
-        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/layerlist_one.xml" value="0.3880208333333333" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/one_background.xml" value="0.3880208333333333" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/rect_comment_bg.xml" value="0.146875" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/tab_icon_all.xml" value="0.253125" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/tab_icon_fav.xml" value="0.253125" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/drawable/unfavourite_icon.xml" value="0.253125" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/activity_details.xml" value="0.14285714285714285" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/activity_main.xml" value="0.2857142857142857" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/activity_main1.xml" value="0.18857142857142858" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/add_b_sheet.xml" value="0.10285714285714286" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/bottom_nav_menu.xml" value="0.30416666666666664" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/comment_list_row.xml" value="0.18857142857142858" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/edit_dialogue.xml" value="0.22" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/fragment_all.xml" value="0.2140625" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/fragment_favs.xml" value="0.371875" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/fragment_layout_all.xml" value="0.2140625" />
-        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/list_item_view.xml" value="0.42857142857142855" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/list_item_view.xml" value="0.3828571428571429" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/layout/rv_layout.xml" value="0.2140625" />
         <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/menu/bottom_nav_menu.xml" value="0.2140625" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/menu/my_menu.xml" value="0.23697916666666666" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/mipmap-anydpi-v26/one.xml" value="0.290625" />
+        <entry key="..\:/Users/rtariq/AndroidStudioProjects/TestApp01/app/src/main/res/mipmap-anydpi-v26/one_round.xml" value="0.290625" />
         <entry key="..\:/Users/rtariq/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/simple_list_item_checked.xml" value="0.371875" />
       </map>
     </option>

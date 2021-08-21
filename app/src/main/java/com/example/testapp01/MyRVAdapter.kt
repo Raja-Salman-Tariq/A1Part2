@@ -1,6 +1,8 @@
 package com.example.testapp01
 
 
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapp01.db.utils.*
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -26,8 +29,8 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
                               val name:TextView=view.findViewById(R.id.drinkName),
                               val desc:TextView=view.findViewById(R.id.drinkDesc),
                               val del:ImageButton=view.findViewById(R.id.drinkDel),
-                              val edit:ImageButton=view.findViewById(R.id.drinkEdit),
-                              val chkBx:CheckBox=view.findViewById(R.id.drinkChkBx)
+                              val favIcon:ImageView=view.findViewById(R.id.favIcon),
+                       val drinkImg:CircleImageView=view.findViewById(R.id.drinkImage)
                             ):RecyclerView.ViewHolder(view)
     //-----------------------------------------------
     // Create a new view, which defines the UI of the list item
@@ -38,7 +41,6 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
 
         if (ctxt.javaClass==FragmentFav::class.java){
             Log.d("favFrag", "onCreateViewHolder: it holds tru")
-            viewHolder.edit.visibility=(View.INVISIBLE)
             viewHolder.del.visibility=(View.INVISIBLE)
         }
 
@@ -51,7 +53,18 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val (id, name, descr, fav)=data[position]
         holder.name.text=name; holder.desc.text= descr
-        holder.chkBx.isChecked=fav
+
+        when (id%4){
+            0   -> holder.drinkImg.setImageResource(R.drawable.one)
+            1   -> holder.drinkImg.setImageResource(R.drawable.two)
+            2   -> holder.drinkImg.setImageResource(R.drawable.three)
+            3   -> holder.drinkImg.setImageResource(R.drawable.four)
+        }
+
+        when (fav){
+            false -> holder.favIcon.setImageResource(R.drawable.unfavourite_icon)
+            true  -> holder.favIcon.setImageResource(R.drawable.favourite_icon)
+        }
         handleListeners(holder, position)
     }
     //-----------------------------------------------
@@ -84,8 +97,7 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
         val mainActivity=(ctxt.activity as MainActivity)
         h.view.setOnClickListener{ DialogueUtility(mainActivity, "My Drink", R.drawable.drink_icon, data[position] ).show()}
         h.del.setOnClickListener{ handleDelListener(mainActivity,position);}
-        h.edit.setOnClickListener{ handleEditListener(h, mainActivity, position)  }
-        handleChkBxListener(h, mainActivity, position)
+        handleFavListener(h, mainActivity, position)
     }
     //-----------------------------------------------
     private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
@@ -93,18 +105,46 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
         DialogueUtility(mainActivity, data, position, "Edit Drink", R.drawable.edit_drink_icon).show()
     }
     //-----------------------------------------------
-    private fun handleChkBxListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){
-        h.chkBx.setOnClickListener{
-            if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass==FragmentFav::class.java) {
-                mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
-                "\nCheck out the all drinks tab to choose some favourites !"
-                mainActivity.tvBuffer.visibility=View.VISIBLE
-            }
+    private fun handleFavListener(h:MyViewHolder, mainActivity: MainActivity, position: Int){
+        h.favIcon.setOnClickListener{
+//            Toast.makeText(h.view.context, "Tapped!", Toast.LENGTH_SHORT).show()
+
+            val drink:Drink = data[0]
+//            Log.d("showw","Before: size=${data.size},\ttag=${h.favIcon.tag}  ")
+            Toast.makeText(h.view.context,"Before: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
+            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
+            Log.d("abc", "Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ")
+
+
 //            Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
-            data[position].fav=h.chkBx.isChecked
+
+
+            when (h.favIcon.tag) {
+                "unfavourite" -> {
+                    h.favIcon.setImageResource(R.drawable.favourite_icon)
+                    h.favIcon.tag = "favourite"
+                    data[position].fav = true
+                }
+                "favourite" -> {
+                    h.favIcon.setImageResource(R.drawable.unfavourite_icon)
+                    h.favIcon.tag = "unfavourite"
+                    data[position].fav = false
+                }
+            }
+
             GlobalScope.launch {
                 mainActivity.drinkViewModel.upd(data[position])
+//                Log.d("showw","during: size=${data.size},\ttag=${h.favIcon.tag}  ")
             }
+            //        Log.d("showw","After: size=${data.size},\ttag=${h.favIcon.tag}  ")
+        Toast.makeText(h.view.context, "After: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
+            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
+            if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass==FragmentFav::class.java) {
+                mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
+                        "\nCheck out the all drinks tab to choose some favourites !"
+                mainActivity.tvBuffer.visibility=View.VISIBLE
+            }
+            notifyDataSetChanged()
         }
     }
     //-----------------------------------------------

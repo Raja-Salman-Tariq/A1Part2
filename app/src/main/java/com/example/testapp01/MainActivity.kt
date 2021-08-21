@@ -4,6 +4,10 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,10 +19,13 @@ import com.google.android.material.tabs.TabLayout
 import com.example.testapp01.db.utils.*
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.view.marginBottom
 import com.example.testapp01.notificationpkg.AlertRcvr
 import com.example.testapp01.retrofit.JsonPlaceholderApi
 import com.example.testapp01.retrofit.Post
+import com.google.android.material.snackbar.Snackbar
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
@@ -48,16 +55,34 @@ class MainActivity : AppCompatActivity() {
     * =============================================*/
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.activity_main)
-        supportActionBar?.hide()
+//        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        setContentView(R.layout.activity_main1)
+//        supportActionBar?.
+//        supportActionBar?.setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.app_bg))
+        setSupportActionBar(findViewById(R.id.my_toolbar))
         //----------------------
         handleSetup()
+        snackbar()
     }
 
+    private fun snackbar() {
 
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
+        if (cm.activeNetworkInfo?.isConnected == true)
+            return
 
+        val mySnack = Snackbar.make(findViewById(android.R.id.content),
+            "You're not connected to the internet." +
+                " Please check your connection to get remote data.", Snackbar.LENGTH_INDEFINITE)
+            .setTextColor(Color.parseColor("#E4B363"))
+            .setBackgroundTint(Color.parseColor("#313638"))
+            .setAction("Close") { }
+            .setActionTextColor(Color.parseColor("#E8E9EB"))
+
+        mySnack.view.translationY= -75F
+        mySnack.show()
+    }
 
 
     //-----------------------------------------------
@@ -82,7 +107,9 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, AlertRcvr::class.java)
         val pendIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
 
-        alarMgr?.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, pendIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarMgr?.setExact(AlarmManager.RTC_WAKEUP, Calendar.getInstance().timeInMillis, pendIntent)
+        }
     }
 
 
@@ -178,6 +205,7 @@ class MainActivity : AppCompatActivity() {
         tabLayout.setupWithViewPager(myViewPager)                           // internal method
         tabLayout.getTabAt(0)?.setIcon(R.drawable.tab_icon_all)       // adding new tabs
         tabLayout.getTabAt(1)?.setIcon(R.drawable.tab_icon_fav)
+        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#E4B363"))
 
 //        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener{     // listener
 //            override fun onTabSelected(tab: TabLayout.Tab?) {                           // for
@@ -221,13 +249,8 @@ class MainActivity : AppCompatActivity() {
     }
     //-----------------------------------------------
     private fun handleAddBtn() {                                    // simply gets view, attaches
-        addBtn = findViewById(R.id.myAddBtn)                        //  listener; creates new obj
-        addBtn.setOnClickListener(View.OnClickListener {            //  & inserts into db
-            val curr:Int =myViewPager.currentItem
-            val nDrinks=drinkViewModel.mAllDrinks?.value?.size
-
-            DialogueUtility(this, "Add A New Drink",R.drawable.add_btn,nDrinks!!).show();
-        })
+        addBtn = findViewById(R.id.myAddBtn)
+        val bSheetHelper = BSheetHelper(this, window.decorView.rootView, drinkViewModel)
     }
 
 

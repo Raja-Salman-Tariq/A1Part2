@@ -12,6 +12,9 @@ interface DrinkDao {
     fun deleteDrink(drink: Drink)
 
     @Update
+    fun updateDrink(drink:Drink)
+
+    @Update
     fun toggleFav(drink: Drink)
 
     @Query("SELECT * FROM Drink WHERE fav=1 ORDER BY name ASC")

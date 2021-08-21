@@ -7,9 +7,22 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar1"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:gravity="top"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
 
     <TextView
-        android:id="@+id/heading"
+        android:id="@+id/heading1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
@@ -24,7 +37,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvBuffer"
+        android:id="@+id/tvBuffer1"
         android:layout_centerInParent="true"
         android:textColor="#F2000000"
         android:textSize="16dp"
@@ -32,20 +45,20 @@
         android:textAlignment="center"
         android:visibility="invisible"
         android:textColorHint="#F2000000"
-        >
+        android:gravity="center_horizontal">
 
     </TextView>
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/fragmentContainer"
+        android:id="@+id/fragmentContainer1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/heading"
+        android:layout_below="@id/heading1"
         android:layout_weight="3"
         android:background="#B3FFFFFF">
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/myTabLayout"
+            android:id="@+id/myTabLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom" />
@@ -53,15 +66,17 @@
     </androidx.viewpager.widget.ViewPager>
 
     <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/myAddBtn"
+        android:id="@+id/myAddBtn1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/heading"
+        android:layout_alignBottom="@+id/heading1"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="41dp"
         android:layout_marginBottom="17dp"
         android:background="@drawable/add_btn"
         android:scaleX="2"
-        android:scaleY="2" />
+        android:scaleY="2"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="41dp" />
 
 </RelativeLayout>
