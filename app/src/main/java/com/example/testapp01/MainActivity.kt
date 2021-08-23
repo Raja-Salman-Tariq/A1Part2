@@ -5,26 +5,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.ConnectivityManager
-import android.net.Network
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.example.testapp01.db.utils.*
 import android.view.*
 import android.widget.Toast
 import com.example.testapp01.notification_and_bcast_rcvrs.AlertRcvr
-import com.google.android.material.snackbar.Snackbar
 import java.util.*
-import android.content.IntentFilter
-import com.example.testapp01.notification_and_bcast_rcvrs.BaseActivity
-import com.example.testapp01.notification_and_bcast_rcvrs.NetworkChangeBcastRcvr
 import com.example.testapp01.notification_and_bcast_rcvrs.SnackbarUtility
 
 
@@ -117,7 +109,8 @@ class MainActivity : BaseActivity() {
     private fun handleViewModelAndTvBuffer() {
         tvBuffer = findViewById(R.id.tvBuffer)
 
-        drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
+//        drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
+        drinkViewModel = myDrinkViewModel!!
 
         if (drinkViewModel.mAllDrinks?.value?.isEmpty() == true){
             Toast.makeText(this, "emptyyyy", Toast.LENGTH_SHORT).show()

@@ -63,8 +63,14 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
         }
 
         when (fav){
-            false -> holder.favIcon.setImageResource(R.drawable.unfavourite_icon)
-            true  -> holder.favIcon.setImageResource(R.drawable.favourite_icon)
+            false -> {
+                holder.favIcon.setImageResource(R.drawable.unfavourite_icon)
+                holder.favIcon.tag="unfavourite"
+            }
+            true  -> {
+                holder.favIcon.setImageResource(R.drawable.favourite_icon)
+                holder.favIcon.tag="favourite"
+            }
         }
         handleListeners(holder, position)
     }
@@ -118,10 +124,10 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     }
 
     //-----------------------------------------------
-    private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
-//        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
-        DialogueUtility(mainActivity, data, position, "Edit Drink", R.drawable.edit_drink_icon).show()
-    }
+//    private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
+////        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
+//        DialogueUtility(mainActivity, data, position, "Edit Drink", R.drawable.edit_drink_icon).show()
+//    }
     //-----------------------------------------------
     private fun handleFavListener(h: MyViewHolder, mainActivity: MainActivity, position: Int){
         h.favIcon.setOnClickListener{
