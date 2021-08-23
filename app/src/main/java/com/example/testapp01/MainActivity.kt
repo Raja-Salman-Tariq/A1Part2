@@ -5,8 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
+import android.net.Network
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,19 +19,16 @@ import com.google.android.material.tabs.TabLayout
 import com.example.testapp01.db.utils.*
 import android.view.*
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
-import androidx.core.view.marginBottom
-import com.example.testapp01.notificationpkg.AlertRcvr
-import com.example.testapp01.retrofit.JsonPlaceholderApi
-import com.example.testapp01.retrofit.Post
+import com.example.testapp01.notification_and_bcast_rcvrs.AlertRcvr
 import com.google.android.material.snackbar.Snackbar
-import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import android.content.IntentFilter
+import com.example.testapp01.notification_and_bcast_rcvrs.BaseActivity
+import com.example.testapp01.notification_and_bcast_rcvrs.NetworkChangeBcastRcvr
+import com.example.testapp01.notification_and_bcast_rcvrs.SnackbarUtility
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     /*###############################################
     * -----        P R O P E R T I E S         -----*
@@ -62,28 +59,32 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.my_toolbar))
         //----------------------
         handleSetup()
-        snackbar()
+
+//        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//
+//        if (cm.activeNetworkInfo?.isConnected == true)
+//            return
+
+//        val mySnack = Snackbar.make(findViewById(android.R.id.content),
+//            "You're not connected to the internet." +
+//                    " Please check your connection to get remote data.", Snackbar.LENGTH_INDEFINITE)
+//            .setTextColor(Color.parseColor("#E4B363"))
+//            .setBackgroundTint(Color.parseColor("#313638"))
+//            .setAction("Close") { }
+//            .setActionTextColor(Color.parseColor("#E8E9EB"))
+//
+//        mySnack.view.translationY= -75F
+//        mySnack.show()
+
+
+
+//        handleSnackbar(this, findViewById(android.R.id.content))
     }
 
-    private fun snackbar() {
 
-        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        if (cm.activeNetworkInfo?.isConnected == true)
-            return
-
-        val mySnack = Snackbar.make(findViewById(android.R.id.content),
-            "You're not connected to the internet." +
-                " Please check your connection to get remote data.", Snackbar.LENGTH_INDEFINITE)
-            .setTextColor(Color.parseColor("#E4B363"))
-            .setBackgroundTint(Color.parseColor("#313638"))
-            .setAction("Close") { }
-            .setActionTextColor(Color.parseColor("#E8E9EB"))
-
-        mySnack.view.translationY= -75F
-        mySnack.show()
+    private fun handleSnackbar(ctxt:Context,v: View ){
+        SnackbarUtility(ctxt,v).showSnackbar()
     }
-
 
     //-----------------------------------------------
 

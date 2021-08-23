@@ -14,12 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapp01.db.utils.Drink
 import com.example.testapp01.db.utils.DrinkViewModel
+import com.example.testapp01.notification_and_bcast_rcvrs.BaseActivity
 import com.example.testapp01.retrofit.Comment
 import com.example.testapp01.rv_adapters.CommentsRVAdapter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class DetailsActivity : AppCompatActivity() {
+class DetailsActivity : BaseActivity() {
 
     /*###############################################
     * -----        P R O P E R T I E S         -----*

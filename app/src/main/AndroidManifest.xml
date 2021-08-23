@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestApp01">
         <activity
+            android:name=".notification_and_bcast_rcvrs.BaseActivity"
+            android:exported="true" />
+        <activity
             android:name=".DetailsActivity"
             android:exported="true" />
         <activity
@@ -25,8 +28,8 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".notificationpkg.AlertRcvr" />
-        <receiver android:name=".notificationpkg.NotificationReceiver"/>
+        <receiver android:name=".notification_and_bcast_rcvrs.AlertRcvr" />
+        <receiver android:name=".notification_and_bcast_rcvrs.ReminderNotificationReceiver" />
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
-package com.example.testapp01.notificationpkg
+package com.example.testapp01.notification_and_bcast_rcvrs
 
-import android.app.Notification
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context

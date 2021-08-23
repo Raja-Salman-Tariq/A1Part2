@@ -1,4 +1,4 @@
-package com.example.testapp01.notificationpkg
+package com.example.testapp01.notification_and_bcast_rcvrs
 
 import android.annotation.TargetApi
 import android.app.NotificationChannel
@@ -9,9 +9,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import androidx.annotation.ColorInt
 import androidx.core.app.NotificationCompat
-import com.example.testapp01.DetailsActivity
 import com.example.testapp01.MainActivity
 import com.example.testapp01.R
 
@@ -40,7 +38,7 @@ class NotificationHelper(val ctxt:Context, val channelId:String, val channelName
     public fun getChannelNotif():NotificationCompat.Builder{
 
         val pendIntend1 = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java),0)
-        val actionIntent= PendingIntent.getBroadcast(this, 0,Intent(this, NotificationReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+        val actionIntent= PendingIntent.getBroadcast(this, 0,Intent(this, ReminderNotificationReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
 
 
         return NotificationCompat.Builder(applicationContext, channelId)
