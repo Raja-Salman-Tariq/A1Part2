@@ -15,7 +15,7 @@ class NetworkChangeBcastRcvr : BroadcastReceiver() {
 //                .showSnackbar()
 //        }
 
-        
+
         BaseActivity.handleSnackbar()
     }
 }

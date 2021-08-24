@@ -17,18 +17,28 @@ open class BaseActivity : AppCompatActivity() {
         setContentView(R.layout.activity_base)
         myRef = this
         myDrinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
+//        showSnackbar=true
+    }
+
+    fun getViewModel(): DrinkViewModel? {
+        return myDrinkViewModel
+    }
+
+    override fun onResume() {
+        super.onResume()
         snackbar()
     }
 
-
     companion object {
-
-
 
         public var myRef : BaseActivity? = null
         public var myDrinkViewModel : DrinkViewModel? = null
+//        public var showSnackbar = true
+
         public fun handleSnackbar() {
-            SnackbarUtility(myRef!!, myRef?.findViewById(android.R.id.content)!!).showSnackbar()
+//            if (showSnackbar)
+                SnackbarUtility(myRef!!, myRef?.findViewById(android.R.id.content)!!).showSnackbar()
+//            else showSnackbar=true
         }
 
         private fun snackbar() {

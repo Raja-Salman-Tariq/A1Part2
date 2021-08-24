@@ -12,6 +12,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 
 public interface JsonPlaceholderApi{
@@ -23,6 +24,10 @@ public interface JsonPlaceholderApi{
     @GET("posts")
     fun getPosts(): Call<List<Post>>
 
-    @GET("comments")
-    fun getComments(): Call<List<Comment>>
+
+//this should be removed
+    @GET("posts/{id}/comments")
+    fun getComments(@Path("id") groupId: Int): Call<List<Comment>>
+
+
 }

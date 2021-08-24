@@ -13,46 +13,88 @@
             android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="10dp"
             android:elevation="10dp"
             android:src="@drawable/one"
             app:civ_border_color="#313638"
             app:civ_border_width="1dp" />
 
-        <TextView
-            android:id="@+id/drinkName"
+        <LinearLayout
+            android:id="@+id/DrinkPostData"
+            android:paddingBottom="10dp"
+            android:paddingTop="5dp"
+            android:paddingHorizontal="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_centerVertical="true"
             android:layout_toStartOf="@id/drinkDel"
             android:layout_toLeftOf="@id/drinkDel"
-            android:layout_toEndOf="@+id/drinkImage"
-            android:layout_toRightOf="@+id/drinkImage"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:paddingHorizontal="5dp"
-            android:text="Name"
-            android:textColor="#313638"
-            android:textSize="16dp"
-            android:textStyle="bold" />
+            android:layout_toEndOf="@id/drinkImage"
+            android:layout_toRightOf="@id/drinkImage"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/drinkDesc"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/drinkName"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="9dp"
-            android:layout_toStartOf="@id/drinkDel"
-            android:layout_toLeftOf="@id/drinkDel"
-            android:layout_toEndOf="@+id/drinkImage"
-            android:layout_toRightOf="@+id/drinkImage"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:paddingHorizontal="5dp"
-            android:text="Lorem ipsum ..."
-            android:textColor="#313638"
-            android:textSize="14dp" />
+                <TextView
+                    android:id="@+id/drinkName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Name"
+                    android:textColor="#313638"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/roomId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_below="@+id/drinkName"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="room id ..."
+                    android:textColor="#313638"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:id="@+id/userId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_below="@+id/roomId"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="User id ..."
+                    android:textColor="#313638"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:id="@+id/myPostId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_below="@+id/userId"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="My post id ..."
+                    android:textColor="#313638"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:id="@+id/drinkDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_below="@+id/drinkName"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Lorem ipsum ..."
+                    android:textColor="#313638"
+                    android:textSize="14dp" />
+
+
+        </LinearLayout>
 
 
         <ImageView
@@ -70,8 +112,8 @@
             android:layout_marginBottom="5dp"
             android:elevation="100dp"
             android:padding="10dp"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
+            android:scaleX="1.25"
+            android:scaleY="1.25"
             android:src="@drawable/unfavourite_icon"
             android:tag="unfavourite" />
 
@@ -81,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="5dp"
             android:layout_toLeftOf="@id/favIcon"
             android:background="@android:color/transparent"
@@ -92,7 +134,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@id/drinkDesc"
+            android:layout_below="@id/DrinkPostData"
             android:layout_marginVertical="5dp"
             android:background="#BFC1B3B3" />
 

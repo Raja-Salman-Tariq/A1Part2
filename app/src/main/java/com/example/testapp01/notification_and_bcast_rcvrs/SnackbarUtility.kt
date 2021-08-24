@@ -8,8 +8,11 @@ import android.net.NetworkInfo
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat.getSystemService
+import com.example.testapp01.BaseActivity
 import com.example.testapp01.R
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class SnackbarUtility(val ctxt:Context, val view: View) {
 
@@ -21,9 +24,15 @@ class SnackbarUtility(val ctxt:Context, val view: View) {
 
         var msg = String()
 
-        msg = when (isConnectedToNetwork(ctxt)){
-            true    -> "You've reconnected with a network ! Syncing now... "
-            false   -> "You're not connected to the internet. Please check your connection to get remote data."
+        when (isConnectedToNetwork(ctxt)){
+            true    -> {
+                msg= "You've reconnected with a network ! Syncing now... "
+
+                GlobalScope.launch {
+                    (ctxt as BaseActivity).getViewModel()?.fetchPosts()
+                }
+            }
+            false   -> msg="You're not connected to the internet. Please check your connection to get remote data."
         }
 
         val mySnack = Snackbar.make(ctxt,

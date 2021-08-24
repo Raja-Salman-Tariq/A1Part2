@@ -32,5 +32,4 @@ interface DrinkDao {
 
     @Query("SELECT * FROM Drink WHERE toGet=1")
     fun getDrink() : LiveData<List<Drink>>
-
 }

@@ -29,6 +29,7 @@
         </activity>
 
         <receiver android:name=".notification_and_bcast_rcvrs.AlertRcvr" />
+        <receiver android:name=".notification_and_bcast_rcvrs.NetworkChangeBcastRcvr"/>
     </application>
 
 </manifest>

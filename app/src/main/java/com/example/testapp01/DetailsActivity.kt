@@ -1,6 +1,7 @@
 package com.example.testapp01
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,6 +12,7 @@ import com.example.testapp01.db.utils.Drink
 import com.example.testapp01.db.utils.DrinkViewModel
 import com.example.testapp01.retrofit.Comment
 import com.example.testapp01.rv_adapters.CommentsRVAdapter
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,7 @@ class DetailsActivity : BaseActivity() {
     lateinit var commentsRv : RecyclerView
     private lateinit var ada: CommentsRVAdapter
     var fresh = true                    // Ignores the first connectivity detecting snackbar
+    private lateinit var progressBar : CircularProgressIndicator
 
 
     //-----------------------------------------------
@@ -34,7 +37,7 @@ class DetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
         //--------------------------------------------
-
+//        showSnackbar=false
         handleSetup()
         populateRv()
     }
@@ -57,14 +60,15 @@ class DetailsActivity : BaseActivity() {
 
         myDrink = drink
 
-        val drinkName = findViewById<TextView>(R.id.detailName)
+        val d=drink[0]
+        handleTextViews(d)
+
+//        Log.d("chqdrink", "populateDrink: name=${d.}")
+
         val favIcon   = findViewById<ImageView>(R.id.detailFavIcon)
-        val drinkDesc = findViewById<TextView>(R.id.detailDescription)
         val favTxt    = findViewById<TextView>(R.id.detailFavTxt)
         val backDrop  = findViewById<ImageView>(R.id.detailImg)
 
-        drinkName.setText(drink?.get(0)?.name)
-        drinkDesc.setText(drink?.get(0)?.desc)
 
         when (drink?.get(0)?.id%4){
             0   ->  backDrop.setImageResource(R.drawable.one)
@@ -104,6 +108,36 @@ class DetailsActivity : BaseActivity() {
         })
     }
 
+    private fun handleTextViews(d: Drink) {
+        val nameField = findViewById<TextView>(R.id.detailsdrinkName)
+        val roomIdField = findViewById<TextView>(R.id.detailsroomId)
+        val userIdField = findViewById<TextView>(R.id.detailsuserId)
+        val postId= findViewById<TextView>(R.id.detailsmyPostId)
+        val textBody = findViewById<TextView>(R.id.detailsdrinkDesc)
+
+        if (null != d.postId){
+            nameField.setText("Post Title: ${d.title}")
+            roomIdField.setText("Room ID: ${d.id}")
+            userIdField.setText("Post User ID : ${d.userId}")
+            postId.setText("Post ID: ${d.postId}")
+            textBody.setText("Post Body: ${d.text}")
+
+            nameField.visibility=View.VISIBLE
+            roomIdField.visibility=View.VISIBLE
+            userIdField.visibility=View.VISIBLE
+            postId.visibility=View.VISIBLE
+            textBody.visibility=View.VISIBLE
+        }
+        else{
+            userIdField.visibility=View.GONE
+            postId.visibility=View.GONE
+
+            nameField.setText("Drink name: ${d.name}")
+            roomIdField.setText("Room ID: ${d.id}")
+            textBody.setText("Description: ${d.desc}")
+        }
+    }
+
     //-----------------------------------------------
 
     private fun handleSetup() {
@@ -113,22 +147,67 @@ class DetailsActivity : BaseActivity() {
 //        Log.d("intented", "handleSetup: "+" "+int.getIntExtra("id", 0))
 //        val id = intent.getIntExtra("id", 0)
 
-        if (drinkViewModel.drink==null)
-            finish()
+//        progressBar = findViewById<CircularProgressIndicator>(R.id.commentProgressBar)
 
-        drinkViewModel.drink?.observe(this){
-            drink -> populateDrink(drink)
+
+//        if (drinkViewModel.drink==null)
+//            finish()
+
+        val drink :Drink = intent.getSerializableExtra("drink") as Drink
+
+        populateDrink(listOf(drink))
+
+        GlobalScope.launch {
+            drinkViewModel.fetchComments((intent.getSerializableExtra("drink") as Drink).postId)
         }
+
+//        drinkViewModel.drink?.observe(this){
+//            drink -> populateDrink(drink)
+//        }
+
+//        drinkViewModel.commentsLoading?.observe(this){
+//            loading ->  handleLoading(loading[0])
+//        }
+
         drinkViewModel.comments?.observe(this){
-            comments -> ada.setCmntData(comments)
+            comments -> receivedRvData(comments)
+        }
+
+        findViewById<ImageView>(R.id.detailsBack).setOnClickListener(View.OnClickListener { finish() })
+    }
+
+    private fun receivedRvData(comments: MutableList<Comment>) {
+
+        if (comments.isEmpty()) {
+            commentsRv.visibility = View.INVISIBLE
+            findViewById<TextView>(R.id.detailsEmptyCmntsTxt).visibility = View.VISIBLE
+        }
+        else {
+            commentsRv.visibility = View.VISIBLE
+            findViewById<TextView>(R.id.detailsEmptyCmntsTxt).visibility=View.INVISIBLE
+        }
+
+        ada.setCmntData(comments)
+    }
+
+    private fun handleLoading(loading: Boolean) {
+        Log.d("loading", "comments $loading: ")
+        if (loading){
+//            commentsRv.visibility=View.GONE
+            progressBar.visibility=View.VISIBLE
+        }
+        else{
+            commentsRv.visibility=View.VISIBLE
+            progressBar.visibility=View.GONE
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        myDrink[0].toGet=false
-        GlobalScope.launch {
-            drinkViewModel.upd(myDrink[0])
-        }
+    override fun onPause() {
+        super.onPause()
+//        myDrink[0].toGet=false
+//        GlobalScope.launch {
+//            drinkViewModel.upd(myDrink[0])
+//        }
+//        showSnackbar=true
     }
 }

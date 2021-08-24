@@ -6,13 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.testapp01.retrofit.Comment
-import com.example.testapp01.retrofit.CommentDao
 
-@Database(entities = [Drink::class, Comment::class], version=2, exportSchema = true)
+
+@Database(entities = [Drink::class/*, Comment::class*/], version=4, exportSchema = true)
 abstract class DrinkDB: RoomDatabase(){
     abstract fun getDrinkDao():DrinkDao
-    abstract fun getCommentDao():CommentDao
+//    abstract fun getCommentDao():CommentDao
 
     // companion object makes all the below static. Thus we make the db singleton
     companion object {

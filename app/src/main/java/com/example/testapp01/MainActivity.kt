@@ -74,9 +74,9 @@ class MainActivity : BaseActivity() {
     }
 
 
-    private fun handleSnackbar(ctxt:Context,v: View ){
-        SnackbarUtility(ctxt,v).showSnackbar()
-    }
+//    private fun handleSnackbar(ctxt:Context,v: View ){
+//        SnackbarUtility(ctxt,v).showSnackbar()
+//    }
 
     //-----------------------------------------------
 
@@ -113,7 +113,7 @@ class MainActivity : BaseActivity() {
         drinkViewModel = myDrinkViewModel!!
 
         if (drinkViewModel.mAllDrinks?.value?.isEmpty() == true){
-            Toast.makeText(this, "emptyyyy", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, "emptyyyy", Toast.LENGTH_SHORT).show()
             tvBuffer.text = "You have no drinks to list here. " +
                     "\nTap the button on the top right to add a new drink !"
             tvBuffer.visibility=View.VISIBLE
@@ -249,6 +249,11 @@ class MainActivity : BaseActivity() {
 
 
     //-----------------------------------------------
+
+    override fun onResume() {
+        super.onResume()
+//        showSnackbar=true
+    }
 
 
 }

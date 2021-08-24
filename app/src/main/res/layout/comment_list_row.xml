@@ -10,24 +10,69 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <TextView
-        android:id="@+id/commentName"
+    <LinearLayout
+        android:id="@+id/CommentsDara"
+        android:paddingBottom="10dp"
+        android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Name"
-        android:textSize="16dp"
-        android:textStyle="bold"
+        android:layout_centerVertical="true"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="20dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical"
+        android:weightSum="5">
 
         <TextView
-            app:layout_constraintTop_toBottomOf="@id/commentName"            android:textSize="16dp"
-            android:text="Comment"
-            android:scrollbarSize="14dp"
-            android:id="@+id/commentComment"
+            android:id="@+id/commentPostId"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"  />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="comment post id"
+            android:textSize="16dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/commentId"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="comment id ..."
+            android:textColor="#313638"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/commentName"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="comment name ..."
+            android:textColor="#313638"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/commentEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="comment email ..."
+            android:textColor="#313638"
+            android:textSize="14dp" />
+
+        <TextView
+            android:textSize="14dp"
+            android:text="Comment"
+            android:id="@+id/commentBody"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"  />
 
 
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

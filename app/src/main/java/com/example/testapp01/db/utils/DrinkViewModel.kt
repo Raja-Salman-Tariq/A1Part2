@@ -23,7 +23,8 @@ class DrinkViewModel(application: Application?) : AndroidViewModel(application!!
     val mAllDrinks: LiveData<List<Drink>>? =mRepository.getAll()
     val favDrinks: LiveData<List<Drink>>? = mRepository.getFavs()
     val drink:LiveData<List<Drink>>?      = mRepository.getDrink()
-    val comments:LiveData<List<Comment>>? = mRepository.getComments()
+    val comments:LiveData<MutableList<Comment>>? = mRepository.getComments(null)
+    val commentsLoading : MutableLiveData<MutableList<Boolean>> = mRepository.getCommentsLoading()
 
     suspend fun del(drink: Drink){
         mRepository.delete(drink)
@@ -36,6 +37,18 @@ class DrinkViewModel(application: Application?) : AndroidViewModel(application!!
     suspend fun insert(drink: Drink) {
         mRepository.insert(drink)
     }
+
+    suspend fun fetchPosts(){
+        mRepository.getRemoteData()
+    }
+
+    suspend fun fetchComments(id:Int?){
+        if (id != null) {
+            mRepository.getRemoteComments(id)
+        }
+//        comments=mRepository.getComments(id)
+    }
+
 
 //    fun getDrink(id:Int, _drink:MutableLiveData<ArrayList<Drink>>) {
 //        viewModelScope.launch {

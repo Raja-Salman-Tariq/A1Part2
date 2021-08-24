@@ -34,12 +34,24 @@ class BSheetHelper(val ctxt:Context, val view: View, val drinkViewModel: DrinkVi
 
     init {
         mBottomSheetBehaviour.state=BottomSheetBehavior.STATE_HIDDEN
+        mBottomSheetBehaviour.peekHeight=0
+        mBottomSheetBehaviour.isHideable=true
         addBtn.setOnClickListener(View.OnClickListener {            //  & inserts into db
+            mBottomSheet.visibility=View.VISIBLE
             mBottomSheetBehaviour.state=BottomSheetBehavior.STATE_EXPANDED
         })
 
         favIcon.setOnClickListener(View.OnClickListener {
-
+            when (favIcon.tag.equals("unfavourite")){
+                true    ->  {
+                    favIcon.setImageResource(R.drawable.favourite_icon)
+                    favIcon.tag="favourite"
+                }
+                false   ->  {
+                    favIcon.setImageResource(R.drawable.unfavourite_icon)
+                    favIcon.tag="unfavourite"
+                }
+            }
         })
 
 
@@ -53,22 +65,30 @@ class BSheetHelper(val ctxt:Context, val view: View, val drinkViewModel: DrinkVi
             }
 
             else {
+                try {
+                    (ctxt.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+                        .hideSoftInputFromWindow(view.windowToken, 0);
+                } catch (e : Exception) {
+                }
+
+
                 val aname=addName.text.toString()
                 val adesc=addDesc.text.toString()
-                val afave=favIcon.tag=="favourite"
+                val afave=favIcon.tag.equals("favourite")
                 val drink = Drink(
                     0,
                     aname,
                     adesc,
-                    true
+                    afave
                 )
                 GlobalScope.launch { drinkViewModel.insert(drink) }
-                mBottomSheetBehaviour.state=BottomSheetBehavior.STATE_HIDDEN
-                try {
-                        (ctxt.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
-                            .hideSoftInputFromWindow(view.windowToken, 0);
-                    } catch (e : Exception) {
-                    }
+                mBottomSheetBehaviour.state=BottomSheetBehavior.STATE_COLLAPSED
+                addName.setText("")
+                addDesc.setText("")
+                favIcon.setTag("unfavourite")
+                favIcon.setImageResource(R.drawable.unfavourite_icon)
+                mBottomSheet.visibility=View.INVISIBLE
+
             }
 
         })
@@ -79,6 +99,12 @@ class BSheetHelper(val ctxt:Context, val view: View, val drinkViewModel: DrinkVi
             favIcon.setTag("unfavourite")
             favIcon.setImageResource(R.drawable.unfavourite_icon)
             mBottomSheetBehaviour.state=BottomSheetBehavior.STATE_HIDDEN
+            try {
+                (ctxt.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(view.windowToken, 0);
+            } catch (e : Exception) {
+            }
+            mBottomSheet.visibility=View.INVISIBLE
         })
     }
 

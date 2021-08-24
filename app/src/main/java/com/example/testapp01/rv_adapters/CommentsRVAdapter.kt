@@ -17,6 +17,7 @@ import com.example.testapp01.retrofit.Comment
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.http.Body
 
 
 class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:MutableList<Comment>):RecyclerView.Adapter<CommentsRVAdapter.MyViewHolder>(){
@@ -29,8 +30,11 @@ class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:M
     //-----------------------------------------------
     //-----------------------------------------------
     class MyViewHolder(val view: View, // default constructor, viewholder elements initialized
+                       val postId:TextView=view.findViewById(R.id.commentPostId),
+                       val id:TextView=view.findViewById(R.id.commentId),
                        val name:TextView=view.findViewById(R.id.commentName),
-                       val desc:TextView=view.findViewById(R.id.commentComment),
+                       val email: TextView=view.findViewById(R.id.commentEmail),
+                       val body: TextView = view.findViewById(R.id.commentBody)
                             ):RecyclerView.ViewHolder(view)
     //-----------------------------------------------
     // Create a new view, which defines the UI of the list item
@@ -46,9 +50,21 @@ class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:M
     //-----------------------------------------------
     // actual interactions with view; ie setting and changing of the view / listeners
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val name = data[position].name
-        val cmnt = data[position].body
-        holder.name.text=name; holder.desc.text= cmnt
+//        val name = data[position].name
+//        val cmnt = data[position].body
+//        holder.name.text=name; holder.desc.text= cmnt
+        val c = data[position]
+
+        Log.d("cmnts", "onBindViewHolder: id=${c.drinkId}, myId=${c.id}, name=${c.name}, email=${c.email}, body=${c.body} ")
+
+
+        if (data.size>0) {
+            holder.postId.setText(data[position].drinkId)
+            holder.id.setText(data[position].id)
+            holder.name.setText(data[position].name)
+            holder.email.setText(data[position].email)
+            holder.body.setText(data[position].body)
+        }
     }
     //-----------------------------------------------
     override fun getItemCount()= data.size
@@ -63,6 +79,8 @@ class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:M
     * =============================================*/
     fun setCmntData(cmntData: List<Comment> ){
         data= cmntData as MutableList<Comment>
+        Log.d("retro", " observed by details activity sent to ada w size ${cmntData.size}: ")
+
         notifyDataSetChanged()
     }
     //-----------------------------------------------

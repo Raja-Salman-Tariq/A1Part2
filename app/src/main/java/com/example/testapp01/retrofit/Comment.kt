@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 @Entity
-public data class Comment(@SerializedName("postId") val drinkId:Int=-1,
+public data class Comment(@SerializedName("postId") val drinkId:Int=-1,// drinkId is post id !
                           @PrimaryKey(autoGenerate = true) val id:Int=-1,
                           val name:String="",
                           val email:String="",

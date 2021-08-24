@@ -15,6 +15,7 @@ import com.example.testapp01.db.utils.*
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.w3c.dom.Text
 
 
 class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drink>):RecyclerView.Adapter<MyRVAdapter.MyViewHolder>(){
@@ -28,11 +29,40 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     //-----------------------------------------------
     class MyViewHolder(val view: View, // default constructor, viewholder elements initialized
                        val name:TextView=view.findViewById(R.id.drinkName),
+                       val roomId:TextView = view.findViewById(R.id.roomId),
+                       val userId:TextView = view.findViewById(R.id.userId),
+                       val postId:TextView = view.findViewById(R.id.myPostId),
                        val desc:TextView=view.findViewById(R.id.drinkDesc),
                        val del:ImageButton=view.findViewById(R.id.drinkDel),
                        val favIcon:ImageView=view.findViewById(R.id.favIcon),
                        val drinkImg:CircleImageView=view.findViewById(R.id.drinkImage)
-                            ):RecyclerView.ViewHolder(view)
+                            ):RecyclerView.ViewHolder(view){
+
+        fun handleTextViews(d: Drink) {
+
+            if (null != d.postId){
+                name.setText("Post Title: ${d.title}")
+                roomId.setText("Room ID: ${d.id}")
+                userId.setText("Post User ID : ${d.userId}")
+                postId.setText("Post ID: ${d.postId}")
+                desc.setText("Post Body: ${d.text}")
+
+                name.visibility=View.VISIBLE
+                roomId.visibility=View.VISIBLE
+                userId.visibility=View.VISIBLE
+                postId.visibility=View.VISIBLE
+                desc.visibility=View.VISIBLE
+            }
+            else{
+                userId.visibility=View.GONE
+                postId.visibility=View.GONE
+
+                name.setText("Drink name: ${d.name}")
+                roomId.setText("Room ID: ${d.id}")
+                desc.setText("Description: ${d.desc}")
+            }
+        }
+                            }
     //-----------------------------------------------
     // Create a new view, which defines the UI of the list item
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -53,7 +83,16 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     // actual interactions with view; ie setting and changing of the view / listeners
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val (id, name, descr, fav)=data[position]
-        holder.name.text=name; holder.desc.text= descr
+//        val model = data[position]
+        holder.name.text= "($id): $name"; holder.desc.text= descr
+//        holder.name.text = model.name
+//        holder.desc.text = model.desc
+//        if(model.name.isEmpty()){
+//            holder.name.visibility = View.GONE
+//        }
+
+        holder.handleTextViews(data[position])
+
 
         when (id%4){
             0   -> holder.drinkImg.setImageResource(R.drawable.one)
@@ -114,12 +153,13 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
         
         GlobalScope.launch {
             mainActivity.drinkViewModel.upd(drink)
+//            mainActivity.drinkViewModel.fetchComments(drink.postId)
         }
 
         ctxt.startActivity(
             Intent(ctxt.activity, DetailsActivity::class.java)
                 .apply {
-                    putExtra("id", drink.id)
+                    putExtra("drink", drink)
                 })
     }
 
@@ -135,8 +175,8 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
 
             val drink:Drink = data[0]
 //            Log.d("showw","Before: size=${data.size},\ttag=${h.favIcon.tag}  ")
-            Toast.makeText(h.view.context,"Before: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
-            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
+//            Toast.makeText(h.view.context,"Before: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
+//            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
             Log.d("abc", "Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ")
 
 
@@ -161,8 +201,8 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
 //                Log.d("showw","during: size=${data.size},\ttag=${h.favIcon.tag}  ")
             }
             //        Log.d("showw","After: size=${data.size},\ttag=${h.favIcon.tag}  ")
-        Toast.makeText(h.view.context, "After: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
-            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
+//        Toast.makeText(h.view.context, "After: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
+//            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
             if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass== FragmentFav::class.java) {
                 mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
                         "\nCheck out the all drinks tab to choose some favourites !"

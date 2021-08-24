@@ -5,8 +5,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.example.testapp01.retrofit.Comment
-import com.example.testapp01.retrofit.CommentDao
 import com.example.testapp01.retrofit.JsonPlaceholderApi
 import com.example.testapp01.retrofit.Post
 import kotlinx.coroutines.GlobalScope
@@ -25,30 +26,34 @@ import retrofit2.converter.gson.GsonConverterFactory
 class DrinkRepo(
     private val application: Application?,
     private val drinkDao: DrinkDao? = DrinkDB.getDatabase(application)?.getDrinkDao(),
-    private val commentDao: CommentDao? = DrinkDB.getDatabase(application)?.getCommentDao(),
+//    private val commentDao: CommentDao? = DrinkDB.getDatabase(application)?.getCommentDao(),
     private var jsonPlaceholderApi: JsonPlaceholderApi?=null,
     private var allDrinks: LiveData<List<Drink>>?=null,
     private var favDrinks: LiveData<List<Drink>>?=null,
     private var drinkToGet:LiveData<List<Drink>>?=null,
-    private var comments:  LiveData<List<Comment>>?=null
+    private val comments: MutableLiveData<MutableList<Comment>> = MutableLiveData<MutableList<Comment>>(),
+    private val commentsLoading : MutableLiveData<MutableList<Boolean>> = MutableLiveData<MutableList<Boolean>>()
+
 ){
 
     init{
         jsonPlaceholderApi=handleRetrofit()
 //        jsonPlaceholderApi?.getRemoteData()
         getRemoteData()
-        getRemoteComments()
+//        getRemoteComments()
         allDrinks=drinkDao?.getAll()
         favDrinks=drinkDao?.getFavs()
         drinkToGet=drinkDao?.getDrink()
-        comments=commentDao?.getDrinkComments()
+        comments.value= mutableListOf()
+        commentsLoading.value= mutableListOf()
+        commentsLoading.value!!.add(false)
     }
 
     //============================================================
     //---------        D R I N K       F U N C S     ------------
     //============================================================
 
-    fun getAll(): LiveData<List<Drink>>? { // TODO : SHOULD THESE ALSO BE SUSPEND FUNS ?
+    fun getAll(): LiveData<List<Drink>>? {
         return allDrinks
     }
 
@@ -60,8 +65,21 @@ class DrinkRepo(
         return drinkToGet
     }
 
-    fun getComments(): LiveData<List<Comment>>?{
+    fun getComments(intId:Int?): LiveData<MutableList<Comment>>? {
+        if (null != intId) {
+            getRemoteComments(intId)
+        }
+        else{
+            comments?.value?.clear()
+        }
         return comments
+//        return Transformations.switchMap(comments){
+//
+//        }
+    }
+
+    fun getCommentsLoading(): MutableLiveData<MutableList<Boolean>> {
+        return commentsLoading
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -96,11 +114,11 @@ class DrinkRepo(
 //        return commentDao?.getDrinkComments()
 //    }
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun insertAllComments(comments: List<Comment>) {
-        commentDao?.addComments(comments)
-    }
+//    @Suppress("RedundantSuspendModifier")
+//    @WorkerThread
+//    suspend fun insertAllComments(comments: List<Comment>) {
+//        commentDao?.addComments(comments)
+//    }
 
     @WorkerThread
     fun getRemoteData(){
@@ -119,10 +137,7 @@ class DrinkRepo(
                     val remoteData = ArrayList<Drink>()
                     if (body != null) {
                         for (post:Post in body)
-                            remoteData.add(Drink(0,post))
-                //                    Toast.makeText(baseContext,
-                //                        "ID: "+post?.id+"\nuID: "+post?.userId+"\ntitle: "+post?.title+"\nText: "+post?.text,
-                //                        Toast.LENGTH_LONG).show()
+                            remoteData.add(Drink(post))
                         GlobalScope.launch {
                             insertAll(remoteData)
                         }
@@ -140,32 +155,41 @@ class DrinkRepo(
     }
 
     @WorkerThread
-    fun getRemoteComments(){
-        val call= jsonPlaceholderApi?.getComments()
+    fun getRemoteComments(postId:Int){
+//        commentsLoading?.value?.removeAt(0)
+//        commentsLoading?.value?.add(true)
+        var remoteData = ArrayList<Comment>()
+
+        val call= jsonPlaceholderApi?.getComments(postId)
         call?.enqueue(object: Callback<List<Comment>> {
             override fun onResponse(call: Call<List<Comment>>, response: Response<List<Comment>>) {
                 if (!response.isSuccessful) {
-//                    Toast.makeText(this.get, "Responce unsuccessful", Toast.LENGTH_SHORT).show()
                     Log.d("retro", "onResponse responce unsuccessful: ")
                 }
 
                 else {
-                    val remoteData = ArrayList<Comment>()
-                    val body = response.body()?.dropLast(response.body()?.size!! -10)
+                    val body = response.body()
                     if (body != null) {
                         for (comment:Comment in body)
                             remoteData.add(Comment(comment))
-                        GlobalScope.launch {
-                            insertAllComments(remoteData)
-                        }
                     }
                 }
+
+
+                comments.value?.clear()
+                comments!!.value?.addAll(remoteData)
+//                Log.d("retro", "changed: ${comments!!.value?.add(remoteData[0])}")
+                Log.d("retro", "populated data of size ${comments!!.value!!.size}: ")
+//                commentsLoading?.value?.clear()
+//                if (commentsLoading?.value?.add(false)==false)
+//                    Log.d("loading", "messed up")
+//                Log.d("loading", "value at end: ${commentsLoading?.value?.get(0)}")
 
             }
 
             override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
 //                Toast.makeText(application?.applicationContext, "Responce failed", Toast.LENGTH_SHORT).show()
-                Log.d("rerto", "onFailure: no internet")
+                Log.d("retro", "onFailure: no internet")
             }
         })
     }
