@@ -51,13 +51,13 @@ class AlertRcvr : BroadcastReceiver(), LifecycleOwner {
 
         val drink : Drink = data?.get(nextInt(data?.size))!!
 
-        drink.toGet=true
+//        drink.toGet=true
+//
+//        GlobalScope.launch {
+//            BaseActivity.myDrinkViewModel?.upd(drink)
+//        }
 
-        GlobalScope.launch {
-            BaseActivity.myDrinkViewModel?.upd(drink)
-        }
-
-        Log.d("datalertcvr", "onReceive: $drink")
+//        Log.d("datalertcvr", "onReceive: $drink")
 
 
         drink.let{
@@ -76,7 +76,7 @@ class AlertRcvr : BroadcastReceiver(), LifecycleOwner {
         }
 
         val notifHelper = NotificationHelper(ctxt!!, "0", "Reminder Channel",
-            NotificationManager.IMPORTANCE_HIGH, msg, imgId)
+            NotificationManager.IMPORTANCE_HIGH, msg, imgId, drink=drink)
         val notifBilder : NotificationCompat.Builder = notifHelper.getChannelNotif()
 
         notifHelper.getMgr()?.notify(0, notifBilder.build())

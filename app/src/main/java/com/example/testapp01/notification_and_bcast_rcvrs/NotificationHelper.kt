@@ -23,11 +23,10 @@ import android.R.attr.bitmap
 import android.graphics.PorterDuffXfermode
 
 import android.graphics.Bitmap
+import com.example.testapp01.db.utils.Drink
 
 
-
-
-class NotificationHelper(val ctxt:Context, val channelId:String, val channelName:String, val imp:Int, val msg: String, val notifIcon: Int, var notifMgr:NotificationManager?=null)
+class NotificationHelper(val ctxt:Context, val channelId:String, val channelName:String, val imp:Int, val msg: String, val notifIcon: Int, var notifMgr:NotificationManager?=null, val drink: Drink)
     :ContextWrapper(ctxt) {
 
     private val contentText ="It's almost time for your meal. Click to view this drink !"
@@ -57,7 +56,14 @@ class NotificationHelper(val ctxt:Context, val channelId:String, val channelName
 
     public fun getChannelNotif():NotificationCompat.Builder{
 
-        val pendIntend1 = PendingIntent.getActivity(this, 0, Intent(this, DetailsActivity::class.java),0)
+        val pendIntend1 = PendingIntent.getActivity(applicationContext, 0,
+            Intent(applicationContext, DetailsActivity::class.java)
+                .apply {
+                    putExtra("nondrink", "testing")
+                    putExtra("drink", drink)
+                },
+            PendingIntent.FLAG_UPDATE_CURRENT)
+
 //        val actionIntent= PendingIntent.getBroadcast(this, 0,Intent(this, ReminderNotificationReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
 
         val myLargeIcon = BitmapFactory.decodeResource(resources, notifIcon)

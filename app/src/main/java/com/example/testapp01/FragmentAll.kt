@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.testapp01.db.utils.*
 import com.example.testapp01.rv_adapters.MyRVAdapter
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
 
@@ -52,6 +55,14 @@ class FragmentAll(private val drinkViewModel: DrinkViewModel): Fragment() {
     * -----   c o n v e n i e n c e   f u n    -----*
     * =============================================*/
     private fun handleRv(view : View) {                 // typical recycler view setup
+        val swipeToRefresh = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
+        swipeToRefresh.setOnRefreshListener {
+            GlobalScope.launch {
+                drinkViewModel.fetchPosts()
+                swipeToRefresh.isRefreshing = false
+            }
+        }
+
         data= mutableListOf()
         recyclerView= view.findViewById(R.id.allRv)
         recyclerView.layoutManager= LinearLayoutManager(this.context)

@@ -19,8 +19,7 @@
         android:layout_centerVertical="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="vertical"
-        android:weightSum="5">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/commentPostId"
@@ -68,9 +67,8 @@
             android:textSize="14dp"
             android:text="Comment"
             android:id="@+id/commentBody"
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="0dp"  />
+            android:layout_height="wrap_content"  />
 
 
     </LinearLayout>

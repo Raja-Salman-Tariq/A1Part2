@@ -26,6 +26,8 @@ class DrinkViewModel(application: Application?) : AndroidViewModel(application!!
     val comments:LiveData<MutableList<Comment>>? = mRepository.getComments(null)
     val commentsLoading : MutableLiveData<MutableList<Boolean>> = mRepository.getCommentsLoading()
 
+
+
     suspend fun del(drink: Drink){
         mRepository.delete(drink)
     }

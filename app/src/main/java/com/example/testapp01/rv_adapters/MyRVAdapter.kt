@@ -83,13 +83,7 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     // actual interactions with view; ie setting and changing of the view / listeners
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val (id, name, descr, fav)=data[position]
-//        val model = data[position]
         holder.name.text= "($id): $name"; holder.desc.text= descr
-//        holder.name.text = model.name
-//        holder.desc.text = model.desc
-//        if(model.name.isEmpty()){
-//            holder.name.visibility = View.GONE
-//        }
 
         holder.handleTextViews(data[position])
 
@@ -141,7 +135,6 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
     //-----------------------------------------------
     private fun handleListeners(h: MyViewHolder, position: Int){
         val mainActivity=(ctxt.activity as MainActivity)
-//        h.view.setOnClickListener{ DialogueUtility(mainActivity, "My Drink", R.drawable.drink_icon, data[position] ).show()}
         h.view.setOnClickListener { startDetailsActivity(mainActivity, data[position]) }
         h.del.setOnClickListener{ handleDelListener(mainActivity,position);}
         handleFavListener(h, mainActivity, position)
@@ -153,7 +146,6 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
         
         GlobalScope.launch {
             mainActivity.drinkViewModel.upd(drink)
-//            mainActivity.drinkViewModel.fetchComments(drink.postId)
         }
 
         ctxt.startActivity(
@@ -163,24 +155,13 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
                 })
     }
 
-    //-----------------------------------------------
-//    private fun handleEditListener(h: MyViewHolder, mainActivity: MainActivity, position: Int) {
-////        Toast.makeText(h.view.context, "Editing row "+(position+1), Toast.LENGTH_SHORT).show()
-//        DialogueUtility(mainActivity, data, position, "Edit Drink", R.drawable.edit_drink_icon).show()
-//    }
+
     //-----------------------------------------------
     private fun handleFavListener(h: MyViewHolder, mainActivity: MainActivity, position: Int){
         h.favIcon.setOnClickListener{
-//            Toast.makeText(h.view.context, "Tapped!", Toast.LENGTH_SHORT).show()
 
             val drink:Drink = data[0]
-//            Log.d("showw","Before: size=${data.size},\ttag=${h.favIcon.tag}  ")
-//            Toast.makeText(h.view.context,"Before: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
-//            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
             Log.d("abc", "Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ")
-
-
-//            Log.d("t1", "chkbx enterd:+ ${h.chkBx.isChecked}")
 
 
             when (h.favIcon.tag) {
@@ -198,11 +179,8 @@ class MyRVAdapter(private val ctxt : Fragment, private var data:MutableList<Drin
 
             GlobalScope.launch {
                 mainActivity.drinkViewModel.upd(data[position])
-//                Log.d("showw","during: size=${data.size},\ttag=${h.favIcon.tag}  ")
             }
-            //        Log.d("showw","After: size=${data.size},\ttag=${h.favIcon.tag}  ")
-//        Toast.makeText(h.view.context, "After: size=${data.size},\ttag=${h.favIcon.tag}  ", Toast.LENGTH_LONG).show()
-//            Toast.makeText(h.view.context,"Item: ${drink.id},\tname=${drink.name}, \tdesc=${drink.desc}, fav=${drink.fav}  ", Toast.LENGTH_LONG).show()
+
             if (mainActivity.drinkViewModel.favDrinks?.value?.size!! <=1 && ctxt.javaClass== FragmentFav::class.java) {
                 mainActivity.tvBuffer.text="You haven't marked any favourite drinks. " +
                         "\nCheck out the all drinks tab to choose some favourites !"

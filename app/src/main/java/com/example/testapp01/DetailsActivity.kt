@@ -1,20 +1,30 @@
 package com.example.testapp01
 
+import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapp01.db.utils.Drink
 import com.example.testapp01.db.utils.DrinkViewModel
 import com.example.testapp01.retrofit.Comment
+import com.example.testapp01.retrofit.JsonPlaceholderApi
 import com.example.testapp01.rv_adapters.CommentsRVAdapter
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class DetailsActivity : BaseActivity() {
 
@@ -22,13 +32,13 @@ class DetailsActivity : BaseActivity() {
     * -----        P R O P E R T I E S         -----*
     * =============================================*/
 
-    private val drinkViewModel :DrinkViewModel= myDrinkViewModel!!
+//    private val drinkViewModel :DrinkViewModel= myDrinkViewModel!!
     lateinit var myDrink:List<Drink>
-    lateinit var comments:MutableLiveData<ArrayList<Comment>>
     lateinit var commentsRv : RecyclerView
     private lateinit var ada: CommentsRVAdapter
-    var fresh = true                    // Ignores the first connectivity detecting snackbar
     private lateinit var progressBar : CircularProgressIndicator
+    private lateinit var favIcon : ImageView
+    private lateinit var favTxt : TextView
 
 
     //-----------------------------------------------
@@ -37,18 +47,93 @@ class DetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
         //--------------------------------------------
-//        showSnackbar=false
+        val id= (intent.extras?.get("drink") as Drink).postId
+//        val id=(intent.getSerializableExtra("drink") as Drink).postId
+        Log.d("cmnts", "onCreate: recvd id: $id")
+//        Log.d("cmnts", "onCreate: recvd nondrink id: ${(intent.extras?.get("drink") as Drink).id}")
+
+        val jsonPlaceholderApi = handleRetrofit()
+
+        progressBar = findViewById<CircularProgressIndicator>(R.id.commentsLoading)
+        progressBar.show()
+
+        if (id!=null) {
+//            progressBar.startAnimation()
+            runOnUiThread(Runnable { getRemoteComments(id, jsonPlaceholderApi)})
+        }
+        else
+            populateRv(mutableListOf())
+
         handleSetup()
-        populateRv()
+//        populateRv()
     }
 
+
+    @WorkerThread
+    fun getRemoteComments(postId:Int, jsonPlaceholderApi:JsonPlaceholderApi){
+        Log.d("cmnts", "getingRemoteComments against id : $postId")
+        var remoteData = ArrayList<Comment>()
+
+        val call= jsonPlaceholderApi?.getComments(postId)
+        call?.enqueue(object: Callback<List<Comment>> {
+            override fun onResponse(call: Call<List<Comment>>, response: Response<List<Comment>>) {
+                if (!response.isSuccessful) {
+                    Log.d("retro", "onResponse responce unsuccessful: ")
+                }
+
+                else {
+                    val body = response.body()
+                    if (body != null) {
+                        for (comment:Comment in body)
+                            remoteData.add(Comment(comment))
+                    }
+                }
+
+                runOnUiThread(Runnable {
+                    populateRv(remoteData)
+//                    receivedRvData(remoteData)
+                })
+                Log.d("cmnts", "populated data of size ${remoteData.size}: ")
+            }
+
+            override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
+//                Toast.makeText(application?.applicationContext, "Responce failed", Toast.LENGTH_SHORT).show()
+                Log.d("retro", "onFailure: no internet")
+            }
+        })
+    }
+
+
+    fun handleRetrofit(): JsonPlaceholderApi {
+        val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://jsonplaceholder.typicode.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        return retrofit.create(JsonPlaceholderApi::class.java)
+    }
     //-----------------------------------------------
 
-    private fun populateRv() {
+    private fun populateRv(remoteData:MutableList<Comment>) {
         commentsRv= findViewById(R.id.commentsRv)
         commentsRv.layoutManager=LinearLayoutManager(this)
-        ada = CommentsRVAdapter(this, mutableListOf<Comment>())
+        ada = CommentsRVAdapter(this, remoteData)
         commentsRv.adapter= ada
+
+        Log.d("cmnts", "receivedRvData: cmnts rcvd of size ${remoteData.size}")
+
+        Log.d("cmnts", "*****    ${Looper.myLooper() == Looper.getMainLooper()}    *****")
+
+        if (remoteData.isEmpty()) {
+//            commentsRv.visibility = View.INVISIBLE
+            findViewById<TextView>(R.id.detailsEmptyCmntsTxt).visibility = View.VISIBLE
+        }
+        else {
+//            commentsRv.visibility = View.VISIBLE
+            findViewById<TextView>(R.id.detailsEmptyCmntsTxt).visibility=View.INVISIBLE
+        }
+
+        progressBar.hide()
     }
 
     //-----------------------------------------------
@@ -63,10 +148,8 @@ class DetailsActivity : BaseActivity() {
         val d=drink[0]
         handleTextViews(d)
 
-//        Log.d("chqdrink", "populateDrink: name=${d.}")
-
-        val favIcon   = findViewById<ImageView>(R.id.detailFavIcon)
-        val favTxt    = findViewById<TextView>(R.id.detailFavTxt)
+        favIcon   = findViewById<ImageView>(R.id.detailFavIcon)
+        favTxt    = findViewById<TextView>(R.id.detailFavTxt)
         val backDrop  = findViewById<ImageView>(R.id.detailImg)
 
 
@@ -98,12 +181,6 @@ class DetailsActivity : BaseActivity() {
                     favIcon.setImageResource(R.drawable.unfavourite_icon)
                     favTxt.setText("Mark\nFavourite")
                 }
-            }
-
-            GlobalScope.launch {
-                val drink = drink?.get(0)
-                drink?.fav= !drink?.fav!!
-                drinkViewModel.upd(drink)
             }
         })
     }
@@ -141,42 +218,23 @@ class DetailsActivity : BaseActivity() {
     //-----------------------------------------------
 
     private fun handleSetup() {
-//        drinkViewModel = ViewModelProvider(this).get(DrinkViewModel::class.java)
-//        val int = intent
-////        Toast.makeText(this, " "+int.hasExtra("id"), Toast.LENGTH_SHORT).show()
-//        Log.d("intented", "handleSetup: "+" "+int.getIntExtra("id", 0))
-//        val id = intent.getIntExtra("id", 0)
-
-//        progressBar = findViewById<CircularProgressIndicator>(R.id.commentProgressBar)
-
-
-//        if (drinkViewModel.drink==null)
-//            finish()
 
         val drink :Drink = intent.getSerializableExtra("drink") as Drink
-
         populateDrink(listOf(drink))
 
-        GlobalScope.launch {
-            drinkViewModel.fetchComments((intent.getSerializableExtra("drink") as Drink).postId)
-        }
-
-//        drinkViewModel.drink?.observe(this){
-//            drink -> populateDrink(drink)
-//        }
-
-//        drinkViewModel.commentsLoading?.observe(this){
-//            loading ->  handleLoading(loading[0])
-//        }
-
-        drinkViewModel.comments?.observe(this){
-            comments -> receivedRvData(comments)
-        }
-
-        findViewById<ImageView>(R.id.detailsBack).setOnClickListener(View.OnClickListener { finish() })
+        val backBtn = findViewById<ImageView>(R.id.detailsBack)
+        backBtn.setOnClickListener(
+                View.OnClickListener {
+                    super.onResume()
+                    finish()
+                }
+            )
     }
 
     private fun receivedRvData(comments: MutableList<Comment>) {
+        Log.d("cmnts", "receivedRvData: cmnts rcvd of size ${comments.size}")
+
+        Log.d("cmnts", "*****    ${Looper.myLooper() == Looper.getMainLooper()}    *****")
 
         if (comments.isEmpty()) {
             commentsRv.visibility = View.INVISIBLE
@@ -186,28 +244,34 @@ class DetailsActivity : BaseActivity() {
             commentsRv.visibility = View.VISIBLE
             findViewById<TextView>(R.id.detailsEmptyCmntsTxt).visibility=View.INVISIBLE
         }
-
         ada.setCmntData(comments)
     }
 
-    private fun handleLoading(loading: Boolean) {
-        Log.d("loading", "comments $loading: ")
-        if (loading){
-//            commentsRv.visibility=View.GONE
-            progressBar.visibility=View.VISIBLE
-        }
-        else{
-            commentsRv.visibility=View.VISIBLE
-            progressBar.visibility=View.GONE
-        }
-    }
+//    private fun handleLoading(loading: Boolean) {
+//        Log.d("loading", "comments $loading: ")
+//        if (loading){
+////            commentsRv.visibility=View.GONE
+//            progressBar.visibility=View.VISIBLE
+//        }
+//        else{
+//            commentsRv.visibility=View.VISIBLE
+//            progressBar.visibility=View.GONE
+//        }
+//    }
 
     override fun onPause() {
         super.onPause()
-//        myDrink[0].toGet=false
-//        GlobalScope.launch {
-//            drinkViewModel.upd(myDrink[0])
-//        }
-//        showSnackbar=true
+        val drink = myDrink[0]
+
+        Log.d("faving", "drink:${drink.fav} ? act:${favIcon.tag=="favourite"} ? going in : ${drink.fav!=(favIcon.tag=="favourite")}")
+
+        if (drink.fav!=(favTxt.text=="Mark\nUnfavourite"))
+            GlobalScope.launch {
+                drink.fav = !drink.fav
+                myDrinkViewModel?.upd(drink)
+            }
     }
+
+
+
 }

@@ -10,5 +10,5 @@ public data class Comment(@SerializedName("postId") val drinkId:Int=-1,// drinkI
                           val name:String="",
                           val email:String="",
                           val body:String="" ){
-    constructor(comment:Comment):this(comment.drinkId,0, comment.name, comment.email, comment.body)
+    constructor(comment:Comment):this(comment.drinkId,comment.id, comment.name, comment.email, comment.body)
 }

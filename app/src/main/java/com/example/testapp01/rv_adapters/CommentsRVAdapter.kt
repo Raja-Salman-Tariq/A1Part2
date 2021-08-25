@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import retrofit2.http.Body
 
 
-class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:MutableList<Comment>):RecyclerView.Adapter<CommentsRVAdapter.MyViewHolder>(){
+class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:MutableList<Comment> = mutableListOf()):RecyclerView.Adapter<CommentsRVAdapter.MyViewHolder>(){
 
 //    lateinit var anotherViewHolder: MyViewHolder
 
@@ -50,20 +50,19 @@ class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:M
     //-----------------------------------------------
     // actual interactions with view; ie setting and changing of the view / listeners
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-//        val name = data[position].name
-//        val cmnt = data[position].body
-//        holder.name.text=name; holder.desc.text= cmnt
-        val c = data[position]
+        val comment = data[position]
 
-        Log.d("cmnts", "onBindViewHolder: id=${c.drinkId}, myId=${c.id}, name=${c.name}, email=${c.email}, body=${c.body} ")
+//        Log.d("cmnts", "onBindViewHolder: Post/Drink_ID=${comment.drinkId},\n myId=${comment.id},\n " +
+//                "name=${comment.name},\n email=${comment.email},\n body=${comment.body}\n" +
+//                "-----------------------------\n\n ")
 
 
-        if (data.size>0) {
-            holder.postId.setText(data[position].drinkId)
-            holder.id.setText(data[position].id)
-            holder.name.setText(data[position].name)
-            holder.email.setText(data[position].email)
-            holder.body.setText(data[position].body)
+        if (data.isNotEmpty()) {
+            holder.postId.text="Post ID: ${comment.drinkId.toString()}"
+            holder.id.text="My Comment ID: ${comment.id.toString()}"
+            holder.name.text="Name: ${comment.name}"
+            holder.email.text="Email: ${comment.email}"
+            holder.body.text="Comment Body: ${comment.body}"
         }
     }
     //-----------------------------------------------
@@ -78,10 +77,19 @@ class CommentsRVAdapter(private val ctxt : AppCompatActivity, private var data:M
     * -----         C U S T O M A R Y          -----*
     * =============================================*/
     fun setCmntData(cmntData: List<Comment> ){
-        data= cmntData as MutableList<Comment>
-        Log.d("retro", " observed by details activity sent to ada w size ${cmntData.size}: ")
-
+        data.clear()
+        data.addAll(cmntData)
         notifyDataSetChanged()
+
+
+        for (comment in data)
+            logCmnt(comment)
+        Log.d("cmnts", " setCmntData inside adapter notifiedDatasetChanged & found size ${data.size}: ")
     }
     //-----------------------------------------------
+
+    fun logCmnt(comment: Comment){
+            Log.d("cmnts", "onBindViewHolder: Post/Drink_ID=${comment.drinkId},\n myId=${comment.id},\n " +
+                "name=${comment.name},\n email=${comment.email},\n body=${comment.body}\n" +
+                "-----------------------------\n\n ")}
 }

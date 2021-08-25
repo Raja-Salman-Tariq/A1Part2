@@ -139,7 +139,7 @@ class DrinkRepo(
                         for (post:Post in body)
                             remoteData.add(Drink(post))
                         GlobalScope.launch {
-                            insertAll(remoteData)
+                            insertAll(remoteData.apply { sortByDescending { it.postId }})
                         }
                     }
 
