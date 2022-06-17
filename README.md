@@ -1,7 +1,4 @@
 # BeverageCataloguingApp
-First Assignment At GR
-
-Rough Read Me - To Be Refined
 
 Features:
 
