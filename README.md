@@ -1,4 +1,4 @@
-# BeverageCataloguingApp
+# BeverageCataloger - To store your favourite drinks.
 
 Features:
 
